@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint · typecheck · test · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build # check:content(스키마·금지어) 포함
+      - name: 빌드 산출물 금지어 검사
+        run: npm run check:content
+
+  e2e:
+    name: e2e (Chromium · iPhone 뷰포트)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npx playwright test --project=iphone-chromium --project=desktop-chromium
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-chromium
+          path: test-results
+          retention-days: 7
+
+  spike-webkit:
+    # 실제 iOS 사파리가 아니라 Linux WebKit이다. 참고용이라 실패해도 CI를 막지 않는다.
+    name: 모바일 스파이크 (WebKit, 참고용)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - run: npm run build
+      - run: npx playwright test --project=iphone-webkit
+        env:
+          PW_WEBKIT: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spike-webkit
+          path: test-results
+          retention-days: 7
