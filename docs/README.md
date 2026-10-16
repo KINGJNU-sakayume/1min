@@ -3,7 +3,7 @@
 한국인만 아는 1분짜리 지옥(티켓팅·수강신청·과제 마감·명절 기차표·오픈런)을 스테이지로 만든 코미디 캐주얼 게임.
 원석: GMTK Game Jam 2026 「11:59」(오마주 문구 TODO, 결정 0001). 이 폴더가 설계의 **정본**이다.
 
-상태: 초안 v0.2 (2026-10-17) · 개인용 · 구현 진행 중 (M0 셋업)
+상태: 초안 v0.2 (2026-10-17) · 개인용 · 구현 진행 중 (M1 엔진)
 
 ## 문서 지도
 
@@ -21,12 +21,13 @@
 | `design/difficulty-results-touch.md` | 난이도 곡선, 결과 화면, 공유 카드, 터치 재미 | 초안 |
 | `plan/prototype-scope.md` | 1차 프로토타입 범위 (1–2주) | 초안 |
 | `plan/claude-code-prompt.md` | **Claude Code에 줄 착수 프롬프트** | 초안 |
+| `spec/architecture.md` | 코드 구조·한 틱의 순서·테스트 지도 | 구현 정본 |
 | `decisions/0002-implementation-defaults.md` | 착수 시 모순·모호점에 고른 기본값 | 확정 |
 | `assets-licenses.md` | 에셋 라이선스 기록 | 유지 |
 
 ## 앞으로 만들 문서
 
-`spec/architecture.md`, `spec/engine-api.md`, `spec/testing.md`, `spec/save-data.md`, `design/copy-bible.md`, `design/ui-kit.md`, `design/stages/{id}.md`(실제 화면 대조표 포함), `plan/playtest-log.md`, `plan/release-checklist.md`, `decisions/NNNN-*.md`
+`spec/engine-api.md`, `spec/testing.md`, `spec/save-data.md`, `design/copy-bible.md`, `design/ui-kit.md`, `design/stages/{id}.md`(실제 화면 대조표 포함), `plan/playtest-log.md`, `plan/release-checklist.md`, `decisions/NNNN-*.md`
 
 ## 라벨 규칙
 

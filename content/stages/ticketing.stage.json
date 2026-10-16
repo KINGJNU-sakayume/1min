@@ -1,0 +1,264 @@
+{
+  "id": "ticketing",
+  "version": 1,
+  "mode": "open",
+  "title": "copy:stage.ticketing.title",
+  "brand": {
+    "name": "copy:brand.ticketing.name",
+    "fictional": true,
+    "disclaimer": "copy:common.parodyNotice",
+    "forbidden": []
+  },
+  "durationTicks": 1200,
+  "steps": [
+    {
+      "id": "open",
+      "kind": "openButton",
+      "title": "copy:step.ticketing.open",
+      "completesWhen": { "type": "openJudged" }
+    },
+    {
+      "id": "queue",
+      "kind": "queue",
+      "title": "copy:step.ticketing.queue",
+      "completesWhen": { "type": "queueZero" },
+      "queue": {
+        "base": 12000,
+        "factors": { "PERFECT": 0.01, "GOOD": 0.05, "LATE": 0.3, "SLOW": 1.0, "EARLY": 1.5 },
+        "waitTicks": { "PERFECT": 160, "GOOD": 240, "LATE": 340, "SLOW": 460, "EARLY": 560 },
+        "jitter": 0.2,
+        "segmentTicks": 10,
+        "pauseChance": 0.25,
+        "rateJitter": { "min": 0.6, "max": 1.8 },
+        "resetTo": 12000,
+        "resetWaitTicks": 500
+      }
+    },
+    {
+      "id": "captcha",
+      "kind": "textInput",
+      "title": "copy:step.ticketing.captcha",
+      "completesWhen": { "type": "inputMatches" },
+      "input": {
+        "length": { "min": 5, "max": 6 },
+        "alphabet": "ABCDEFGHJKLMNPRSTUVWXYZ",
+        "prompt": "copy:step.ticketing.captcha.prompt",
+        "regenerateOnWrong": true
+      }
+    },
+    {
+      "id": "seat",
+      "kind": "seatMap",
+      "title": "copy:step.ticketing.seat",
+      "completesWhen": { "type": "seatHeld" },
+      "seatMap": {
+        "zones": [
+          {
+            "id": "a",
+            "label": "copy:step.ticketing.zone.a",
+            "floor": 1,
+            "rows": 6,
+            "cols": 10,
+            "initialTakenRatio": 0.72
+          },
+          {
+            "id": "b",
+            "label": "copy:step.ticketing.zone.b",
+            "floor": 1,
+            "rows": 6,
+            "cols": 10,
+            "initialTakenRatio": 0.8
+          },
+          {
+            "id": "c",
+            "label": "copy:step.ticketing.zone.c",
+            "floor": 2,
+            "rows": 5,
+            "cols": 10,
+            "initialTakenRatio": 0.6
+          },
+          {
+            "id": "d",
+            "label": "copy:step.ticketing.zone.d",
+            "floor": 2,
+            "rows": 5,
+            "cols": 10,
+            "initialTakenRatio": 0.66
+          }
+        ],
+        "competitor": { "waveTicks": { "min": 6, "max": 14 }, "perWave": { "min": 1, "max": 2 } },
+        "revealLagTicks": 8
+      }
+    },
+    {
+      "id": "price",
+      "kind": "quantity",
+      "title": "copy:step.ticketing.price",
+      "completesWhen": { "type": "qtyAtLeast", "min": 1 },
+      "quantity": { "initial": 0, "max": 4 },
+      "skippableAtLevel": 2
+    },
+    {
+      "id": "buyer",
+      "kind": "textInput",
+      "title": "copy:step.ticketing.buyer",
+      "completesWhen": { "type": "inputMatches" },
+      "input": {
+        "length": { "min": 6, "max": 6 },
+        "alphabet": "0123456789",
+        "prompt": "copy:step.ticketing.buyer.prompt",
+        "regenerateOnWrong": false
+      },
+      "skippableAtLevel": 2
+    },
+    {
+      "id": "pay",
+      "kind": "payment",
+      "title": "copy:step.ticketing.pay",
+      "completesWhen": { "type": "paid" },
+      "timeLimitTicks": 400,
+      "onTimeout": { "kind": "resetStep", "to": "seat" },
+      "payment": {
+        "methods": [
+          { "id": "card", "label": "copy:step.ticketing.pay.card" },
+          { "id": "bank", "label": "copy:step.ticketing.pay.bank" }
+        ],
+        "requireAgree": true,
+        "displayScale": 15
+      }
+    }
+  ],
+  "deck": {
+    "common": [
+      "common.messenger-ping",
+      "common.keyboard-cover",
+      "common.captcha",
+      "common.server-lag",
+      "common.timer-squeeze",
+      "common.popup-blocked",
+      "common.double-tab",
+      "common.rapid-click-limit"
+    ],
+    "specific": [
+      "ticketing.refresh-temptation",
+      "ticketing.seat-snipe",
+      "ticketing.zone-click-limit",
+      "ticketing.one-account-one-queue",
+      "ticketing.price-zero-qty",
+      "ticketing.buyer-birth-typo",
+      "ticketing.bank-transfer-trap"
+    ],
+    "mustInclude": { "specificMin": 1 },
+    "weightOverrides": { "ticketing.seat-snipe": 20 }
+  },
+  "difficulty": [
+    { "level": 0, "budget": 3, "maxSlots": 1, "fixedSchedule": "ticketing-intro" },
+    { "level": 1, "budget": 6, "maxSlots": 1 },
+    { "level": 2, "budget": 10, "maxSlots": 1 },
+    { "level": 3, "budget": 14, "maxSlots": 2 },
+    { "level": 4, "budget": 18, "maxSlots": 2 },
+    { "level": 5, "budget": 22, "maxSlots": 3 }
+  ],
+  "results": [
+    {
+      "id": "success-close",
+      "when": { "outcome": "success", "remainingTicksLte": 60 },
+      "title": "copy:result.ticketing.successClose",
+      "line": "copy:result.ticketing.successClose.line"
+    },
+    {
+      "id": "success-perfect",
+      "when": { "outcome": "success", "remainingTicksGte": 300 },
+      "title": "copy:result.ticketing.successPerfect",
+      "line": "copy:result.ticketing.successPerfect.line"
+    },
+    {
+      "id": "success-default",
+      "when": { "outcome": "success" },
+      "title": "copy:result.ticketing.successDefault",
+      "line": "copy:result.ticketing.successDefault.line"
+    },
+    {
+      "id": "fail-fatal",
+      "when": { "outcome": "fail", "reason": "fatal" },
+      "title": "copy:result.ticketing.failFatal",
+      "line": "copy:result.ticketing.failFatal.line"
+    },
+    {
+      "id": "fail-queue",
+      "when": { "outcome": "fail", "stat": { "name": "queueResets", "gte": 1 } },
+      "title": "copy:result.ticketing.failQueue",
+      "line": "copy:result.ticketing.failQueue.line"
+    },
+    {
+      "id": "fail-sniped",
+      "when": { "outcome": "fail", "stat": { "name": "seatConflicts", "gte": 2 } },
+      "title": "copy:result.ticketing.failSniped",
+      "line": "copy:result.ticketing.failSniped.line"
+    },
+    {
+      "id": "fail-captcha",
+      "when": { "outcome": "fail", "stat": { "name": "captchaWrong", "gte": 3 } },
+      "title": "copy:result.ticketing.failCaptcha",
+      "line": "copy:result.ticketing.failCaptcha.line"
+    },
+    {
+      "id": "fail-lock",
+      "when": { "outcome": "fail", "stat": { "name": "rateLimited", "gte": 1 } },
+      "title": "copy:result.ticketing.failLock",
+      "line": "copy:result.ticketing.failLock.line"
+    },
+    {
+      "id": "fail-paytimeout",
+      "when": { "outcome": "fail", "stat": { "name": "stepTimeouts", "gte": 1 } },
+      "title": "copy:result.ticketing.failPayTimeout",
+      "line": "copy:result.ticketing.failPayTimeout.line"
+    },
+    {
+      "id": "fail-early",
+      "when": { "outcome": "fail", "judgment": "EARLY" },
+      "title": "copy:result.ticketing.failEarly",
+      "line": "copy:result.ticketing.failEarly.line"
+    },
+    {
+      "id": "fail-default",
+      "when": { "outcome": "fail" },
+      "title": "copy:result.ticketing.failDefault",
+      "line": "copy:result.ticketing.failDefault.line"
+    }
+  ],
+  "theme": { "tokens": "ddakpyo", "seatShape": "jellybean" },
+  "evidence": [
+    {
+      "claim": "정각 이후에도 단계가 6개 남는다 (예매하기→입력완료→좌석선택완료→다음 단계→결제하기)",
+      "level": "secondary",
+      "sources": ["S54"]
+    },
+    {
+      "claim": "대기열 새로고침·뒤로가기 시 순번 초기화",
+      "level": "confirmed",
+      "sources": ["S6", "S10", "S48"]
+    },
+    { "claim": "1계정 1대기열", "level": "confirmed", "sources": ["S4"] },
+    { "claim": "\"이미 선택된 좌석입니다\" 좌석 충돌", "level": "secondary", "sources": ["S48"] },
+    { "claim": "기본가 수량이 0매로 시작", "level": "secondary", "sources": ["S54"] },
+    {
+      "claim": "좌석 점유 후 결제 제한 (5분 개념을 20초로 압축)",
+      "level": "secondary",
+      "sources": ["S58"]
+    },
+    {
+      "claim": "좌석도 비율·대기 화면 문구 위치",
+      "level": "unverified",
+      "note": "스킨 토큰으로 분리, 실화면 대조 필요"
+    }
+  ],
+  "legal": {
+    "noRealBrands": true,
+    "noRealPeople": true,
+    "noRealInputRequested": true,
+    "disclaimerShown": true,
+    "assetLicenses": "docs/assets-licenses.md",
+    "reviewedAt": "2026-10-16"
+  }
+}
