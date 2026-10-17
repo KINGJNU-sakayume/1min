@@ -5,6 +5,7 @@ import { expect, test, type Page } from '@playwright/test';
  * 카드는 화면에 보이는 버튼으로 해결하고, 미끼(새로고침·새 탭·알림)는 누르지 않는다.
  */
 async function playOnce(page: Page) {
+  page.setDefaultTimeout(3000);
   await page.getByTestId('start').click();
   await page.getByTestId('ready').click();
   await expect(page.getByTestId('open')).toHaveText('예매하기', { timeout: 10_000 });
@@ -53,29 +54,33 @@ async function playOnce(page: Page) {
       await page.waitForTimeout(200);
       continue;
     }
-    if (await page.getByTestId('text-input').isVisible()) {
-      const src = page.locator('[data-testid="captcha"], [data-testid="birth"]').first();
-      await page.getByTestId('text-input').fill((await src.getAttribute('data-code')) ?? '');
-      await page.getByTestId('text-submit').click();
-    } else if (await page.getByTestId('seat-confirm').isVisible()) {
-      const mine = page.locator('[data-view="mine"]');
-      if ((await mine.count()) > 0) await page.getByTestId('seat-confirm').click();
-      else {
-        const free = page.locator('[data-view="free"]');
-        if ((await free.count()) > 0) await free.first().click();
-        else await page.locator('[data-testid^="zone-"]').last().click();
+    // 화면은 50ms마다 다시 그려진다: 한 번의 클릭이 오래 막히면 다음 반복에서 다시 본다
+    const act = async () => {
+      if (await page.getByTestId('text-input').isVisible()) {
+        const src = page.locator('[data-testid="captcha"], [data-testid="birth"]').first();
+        await page.getByTestId('text-input').fill((await src.getAttribute('data-code')) ?? '');
+        await page.getByTestId('text-submit').click();
+      } else if (await page.getByTestId('seat-confirm').isVisible()) {
+        const mine = page.locator('[data-view="mine"]');
+        if ((await mine.count()) > 0) await page.getByTestId('seat-confirm').click();
+        else {
+          const free = page.locator('[data-view="free"]');
+          if ((await free.count()) > 0) await free.first().click();
+          else await page.locator('[data-testid^="zone-"]').last().click();
+        }
+      } else if (await page.getByTestId('price-next').isVisible()) {
+        if ((await page.getByTestId('qty').textContent())?.startsWith('0'))
+          await page.getByTestId('qty-plus').click();
+        else await page.getByTestId('price-next').click();
+      } else if (await page.getByTestId('pay').isVisible()) {
+        if (!(await page.getByTestId('method-card').isChecked()))
+          await page.getByTestId('method-card').click();
+        else if (!(await page.getByTestId('agree').isChecked()))
+          await page.getByTestId('agree').click();
+        else await page.getByTestId('pay').click();
       }
-    } else if (await page.getByTestId('price-next').isVisible()) {
-      if ((await page.getByTestId('qty').textContent())?.startsWith('0'))
-        await page.getByTestId('qty-plus').click();
-      else await page.getByTestId('price-next').click();
-    } else if (await page.getByTestId('pay').isVisible()) {
-      if (!(await page.getByTestId('method-card').isChecked()))
-        await page.getByTestId('method-card').click();
-      else if (!(await page.getByTestId('agree').isChecked()))
-        await page.getByTestId('agree').click();
-      else await page.getByTestId('pay').click();
-    }
+    };
+    await act().catch((e: unknown) => console.info('다음 반복에서 재시도', e));
     await page.waitForTimeout(150);
   }
   throw new Error('판이 끝나지 않음');
