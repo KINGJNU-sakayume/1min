@@ -7,8 +7,11 @@ import director from './director.json';
 import commonCards from './cards/common.cards.json';
 import ticketingCards from './cards/ticketing.cards.json';
 import ticketingStage from './stages/ticketing.stage.json';
+import tutorialStage from './stages/tutorial.stage.json';
 import ticketingIntro from './stages/fixed/ticketing-intro.json';
+import tutorialFixed from './stages/fixed/tutorial.json';
 import raspberryTheme from './themes/raspberry.json';
+import slateTheme from './themes/slate.json';
 
 export const rawContent = {
   copy: ko as unknown,
@@ -17,9 +20,18 @@ export const rawContent = {
     { file: 'common.cards.json', data: commonCards as unknown },
     { file: 'ticketing.cards.json', data: ticketingCards as unknown },
   ],
-  stageFiles: [{ file: 'ticketing.stage.json', data: ticketingStage as unknown }],
-  fixedFiles: [{ file: 'ticketing-intro.json', data: ticketingIntro as unknown }],
-  themeFiles: [{ file: 'raspberry.json', data: raspberryTheme as unknown }],
+  stageFiles: [
+    { file: 'tutorial.stage.json', data: tutorialStage as unknown },
+    { file: 'ticketing.stage.json', data: ticketingStage as unknown },
+  ],
+  fixedFiles: [
+    { file: 'ticketing-intro.json', data: ticketingIntro as unknown },
+    { file: 'tutorial.json', data: tutorialFixed as unknown },
+  ],
+  themeFiles: [
+    { file: 'raspberry.json', data: raspberryTheme as unknown },
+    { file: 'slate.json', data: slateTheme as unknown },
+  ],
 };
 
 export type RawContent = typeof rawContent;

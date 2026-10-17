@@ -103,35 +103,4 @@ export async function unlockAudio(): Promise<ProbeResult> {
   };
 }
 
-/** Web Share → 클립보드 → execCommand 순서의 공유 폴백. 앱의 share.ts와 같은 순서. */
-export async function shareWithFallback(
-  text: string,
-): Promise<'share' | 'clipboard' | 'execCommand' | 'failed'> {
-  if (typeof navigator.share === 'function') {
-    try {
-      await navigator.share({ text });
-      return 'share';
-    } catch (e) {
-      // 사용자가 공유 시트를 닫으면 AbortError — 클립보드로 넘어간다
-      console.info('share 실패, 클립보드 폴백', e);
-    }
-  }
-  if (navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return 'clipboard';
-    } catch (e) {
-      console.info('clipboard 실패, execCommand 폴백', e);
-    }
-  }
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.setAttribute('readonly', '');
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  const ok = document.execCommand('copy');
-  ta.remove();
-  return ok ? 'execCommand' : 'failed';
-}
+export { shareOrCopy as shareWithFallback } from '../ui/share';
