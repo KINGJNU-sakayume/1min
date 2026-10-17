@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { copy } from '../../content/copy';
+import { copy, hasCopy } from '../../content/copy';
 import type { RunResult, TimelineItem } from '../../engine/result';
 import type { RunContext } from '../../engine/types';
 import { emojiTimeline } from '../share';
@@ -26,6 +26,10 @@ export function ResultScreen({
 }) {
   const [shareNote, setShareNote] = useState<string | null>(null);
   const win = result.outcome === 'success';
+  const labelKey = `result.${ctx.stage.id}.label.${result.outcome}`;
+  const label = hasCopy(labelKey)
+    ? copy(labelKey)
+    : copy(win ? 'ui.result.success' : 'ui.result.fail');
   const step = ctx.stage.steps.find((s) => s.id === result.endStepId);
   const stepName = step ? copy(step.title) : '';
   const cause =
@@ -40,9 +44,7 @@ export function ResultScreen({
   return (
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col gap-6 px-5 pb-8 pt-[max(2.5rem,env(safe-area-inset-top))] text-game-ink">
       <header className="flex flex-col gap-3">
-        <p className={`text-sm font-bold ${win ? 'text-game-ink' : 'text-game-danger'}`}>
-          {copy(win ? 'ui.result.success' : 'ui.result.fail')}
-        </p>
+        <p className={`text-sm font-bold ${win ? 'text-game-ink' : 'text-game-danger'}`}>{label}</p>
         <h1 data-testid="result-title" className="text-4xl font-black leading-tight">
           {copy(result.title)}
         </h1>

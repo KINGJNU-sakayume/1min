@@ -8,7 +8,7 @@ import type {
   StageJson,
 } from './types';
 
-/** 밀리초 카드 데이터를 틱 단위 정의로 바꾼다 (결정 0002 #5·#6의 기본값 포함) */
+/** 밀리초 카드 데이터를 틱 단위 정의로 바꾼다 (결정 0003 #5·#6의 기본값 포함) */
 export function compileCard(card: CardJson, director: DirectorJson): CardDef {
   const { telegraphMs, activeMs, cooldownMs, expire, ...rest } = card;
   const toTicks = (ms: number) => Math.round(ms / director.tickMs);
@@ -55,7 +55,7 @@ export function windowMatches(def: CardDef, step: { id: string; kind: string }):
   return (w.steps?.includes(step.id) ?? false) || (w.stepKinds?.includes(step.kind) ?? false);
 }
 
-/** 만료 시 자동으로 잠금·되돌림이 일어나는 카드 (텔레그래프 최소값 대상, 결정 0002 #4) */
+/** 만료 시 자동으로 잠금·되돌림이 일어나는 카드 (텔레그래프 최소값 대상, 결정 0003 #4) */
 export function isPunishingOnExpire(def: {
   expire: 'resolve' | 'fail';
   failEffect: { kind: string };

@@ -33,12 +33,12 @@
 
 ## 3. 데이터 형식
 
-**정본은 `content/schema/card.ts`(zod)다.** 아래 초안에서 구현 때 바뀐 점 (결정 0002):
+**정본은 `content/schema/card.ts`(zod)다.** 아래 초안에서 구현 때 바뀐 점 (결정 0003):
 
 - `effect`는 엔진이 아는 원시 효과의 조합이다: `overlay`(UI 표현), `blocksStep`(단계 입력 차단), `rateLimit{target,maxTaps,windowTicks}`(광클 제한), `squeezeTimerTicks`(제한시간 압축), `hook`(`seatMap.release`처럼 현재 단계에 보내는 신호), `code{length,alphabet}`(type 카드 정답).
 - `resolve.kind`: `tap{target}`, `hold{target,ticks}`, `type`, `choose{options}`, `avoid{target}`(건드리면 실패 — `step...`이면 단계 대상), `ignore{target}`(건드리면 실패 효과), `none`.
 - `expire`: 만료 시 `resolve`/`fail`. 생략하면 wait·ignore는 resolve, 나머지는 fail.
-- `window`: `steps`(단계 id) 또는 `stepKinds`(공통 카드용). window 카드는 **해당 단계 진입 후** 뜬다 (§5 보강, 결정 0002 #18).
+- `window`: `steps`(단계 id) 또는 `stepKinds`(공통 카드용). window 카드는 **해당 단계 진입 후** 뜬다 (§5 보강, 결정 0003 #18).
 - `failEffect`: `none | lock{ticks} | penalty{ticks} | resetStep{to?} | queueBack{amount} | fatal{reason?}` (시간은 틱).
 - `evidence.level`: `confirmed | secondary | memory | guess | unverified`.
 - `synergyWith[].name`: 조합 이름 문구 키. 문구는 `{copyKey}.title`, `.body`, 버튼은 `{copyKey}.{target}`.

@@ -78,12 +78,12 @@ content/
 ]
 ```
 
-- `kind`는 UI 컴포넌트·엔진 핸들러와 연결되는 **미리 정의된 종류**만 허용한다: `openButton`, `queue`, `textInput`, `seatMap`, `quantity`, `payment`, `choose`, `hold`, `confirm` (M4에서 수강신청용 종류 추가 예정). 새 종류는 코드 변경이 필요하다 (`src/engine/steps/index.ts`).
+- `kind`는 UI 컴포넌트·엔진 핸들러와 연결되는 **미리 정의된 종류**만 허용한다: `openButton`, `queue`, `textInput`, `seatMap`, `quantity`, `payment`, `choose`, `hold`, `confirm`, `courseCart`(수강신청 장바구니, 결정 0002). 새 종류는 코드 변경이 필요하다 (`src/engine/steps/index.ts`).
 - `completesWhen`은 **선언형 조건**이다. 스크립트·함수는 허용하지 않는다. kind마다 정해진 type 하나.
 - `timeLimitTicks`: 해당 단계에 진입한 뒤 제한 시간 (결제 타이머 등). `onTimeout`은 실패 효과(`resetStep`, `fatal` 등). 생략하면 판 실패.
 - `skippableAtLevel`: 이 난이도 이하에서는 자동 통과 (realism-spec §1.1의 시간 압축).
-- 대기열 수치의 뜻: `factors`는 시작 인원 배율, `waitTicks`는 판정별 평균 대기 틱, 구간마다 속도를 다시 뽑고 `pauseChance`로 멈춘다 (결정 0002 #19).
-- 티켓팅 단계는 realism-spec §1.1을 따른다 (결정 0002 #1: 구역 선택은 `seat` 안의 탭).
+- 대기열 수치의 뜻: `factors`는 시작 인원 배율, `waitTicks`는 판정별 평균 대기 틱, 구간마다 속도를 다시 뽑고 `pauseChance`로 멈춘다 (결정 0003 #19).
+- 티켓팅 단계는 realism-spec §1.1을 따른다 (결정 0003 #1: 구역 선택은 `seat` 안의 탭).
 
 ### 4.2 `lanes` (deadline 모드)
 
@@ -194,10 +194,10 @@ content/
 
 실제 파일 `content/stages/ticketing.stage.json`이 완성 예시다 (문서에 사본을 두면 어긋나므로 복사하지 않는다). 최상위 필드 중 이 문서 §2에 더해진 것:
 
-- `tutorial`(선택): `true`면 difficulty가 난이도 0 하나만 있어도 된다 (결정 0002 #9).
+- `tutorial`(선택): `true`면 difficulty가 난이도 0 하나만 있어도 된다 (결정 0003 #9).
 - `brand.forbidden`: 스테이지별 추가 금지어. 공통 금지어는 `scripts/forbidden-words.txt`.
 
 ## 13. 변경 기록
 
 - 2026-10-16 v0.1 초안
-- 2026-10-16 v0.2 M1 구현 반영: 티켓팅 단계(realism-spec), kind 목록, 대기열 파라미터, `skippableAtLevel`·`onTimeout`, 결과 `stat`·`judgment` 조건 (결정 0002)
+- 2026-10-16 v0.2 M1 구현 반영: 티켓팅 단계(realism-spec), kind 목록, 대기열 파라미터, `skippableAtLevel`·`onTimeout`, 결과 `stat`·`judgment` 조건 (결정 0003)

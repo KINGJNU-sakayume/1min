@@ -17,12 +17,13 @@ interface Toast {
 }
 
 const TOAST_TICKS = 30;
+/** 화면 자체(팝업·버튼 상태)가 이미 알려 주는 알림은 토스트로 겹치지 않는다 */
+const SILENT_NOTICES = new Set(['seat.conflict', 'course.pending']);
 
 function toastFor(e: EngineEvent): string | null {
   if (e.type === 'judgment') return copy(`ui.judgment.${e.judgment}`);
   if (e.type === 'early') return copy('ui.judgment.EARLY');
-  // 좌석 충돌은 화면 팝업이 이미 알려 준다
-  if (e.type === 'notice' && e.key !== 'seat.conflict') return copy(`ui.notice.${e.key}`);
+  if (e.type === 'notice' && !SILENT_NOTICES.has(e.key)) return copy(`ui.notice.${e.key}`);
   if (e.type === 'synergy') return copy(e.name);
   return null;
 }

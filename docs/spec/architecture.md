@@ -48,7 +48,7 @@ scripts/                check-content(빌드 게이트), balance-report(개발�
 
 엔진 상태는 직렬화 가능한 순수 데이터다(PRNG 상태도 uint32 정수). UI는 `requestAnimationFrame` 누산기로 50ms마다 `step`을 부르고, 반환된 이벤트로 소리·진동·애니메이션을 낸다.
 
-## 4. 카드 기준점 (결정 0002 #18)
+## 4. 카드 기준점 (결정 0003 #18)
 
 - `window`가 없는 카드: 판 시작(T0) 기준 틱. 디렉터가 램프 가중치로 구간을 고른다.
 - `window`가 있는 카드: **해당 단계 진입 후 offset 틱**. 단계를 지나치면 `skipped`.

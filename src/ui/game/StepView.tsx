@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { seatView, zoneSeatIds } from '../../engine/steps/seatMap';
 import type { Action, RunContext, RunState, StepJson } from '../../engine/types';
-import { copy } from '../../content/copy';
+import { copy, hasCopy } from '../../content/copy';
+import { registered } from '../../engine/steps/courseCart';
 import type { ThemeJson } from '../../../content/schema/theme';
 import type { LayoutMode } from '../useLayoutMode';
 import { Panel, SitePopup, SiteButton } from './parts';
@@ -37,29 +38,38 @@ export function StepView(props: Props) {
       return <ChooseStep {...props} def={def} />;
     case 'hold':
       return <HoldStep {...props} />;
+    case 'courseCart':
+      return <CourseCartStep {...props} def={def} />;
     case 'confirm':
-      return (
-        <Panel>
-          <SiteButton onClick={() => props.send('tap', 'step:confirm')} className="w-full">
-            {copy(def.title)}
-          </SiteButton>
-        </Panel>
-      );
+      return <ConfirmStep {...props} def={def} />;
   }
 }
 
 type DefOf<K extends StepJson['kind']> = Extract<StepJson, { kind: K }>;
 
-/** 정각 전 가상 서버 시계: T0 = 20:00:00.0 */
-function serverClock(tick: number, t0: number): string {
+/** 정각 전 가상 서버 시계: T0 = 오픈 시각 정각 (`stage.{id}.openHour`) */
+function serverClock(tick: number, t0: number, openHour: number): string {
   const ms = (tick - t0) * 50;
-  const total = 20 * 3600 * 1000 + ms;
+  const total = openHour * 3600 * 1000 + ms;
   const h = Math.floor(total / 3600000);
   const m = Math.floor((total % 3600000) / 60000);
   const s = Math.floor((total % 60000) / 1000);
   const d = Math.floor((total % 1000) / 100);
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${pad(h)}:${pad(m)}:${pad(s)}.${d}`;
+}
+
+function ServerClock({ ctx, state }: { ctx: RunContext; state: RunState }) {
+  const key = `stage.${ctx.stage.id}.openHour`;
+  const hour = hasCopy(key) ? Number(copy(key)) : 0;
+  return (
+    <div className="flex items-baseline justify-between text-sm">
+      <span className="text-[var(--c-muted)]">{copy('ui.open.serverTime')}</span>
+      <span data-testid="server-clock" className="font-bold tabular-nums">
+        {serverClock(state.tick, ctx.t0, hour)}
+      </span>
+    </div>
+  );
 }
 
 function OpenStep({ ctx, state, send }: Props) {
@@ -79,9 +89,8 @@ function OpenStep({ ctx, state, send }: Props) {
             <p className="text-sm text-[var(--c-muted)]">{copy('ui.open.seats')}</p>
           </div>
         </div>
-        <div className="flex items-baseline justify-between border-t border-[var(--c-line)] pt-3 text-sm">
-          <span className="text-[var(--c-muted)]">{copy('ui.open.serverTime')}</span>
-          <span className="font-bold tabular-nums">{serverClock(state.tick, ctx.t0)}</span>
+        <div className="border-t border-[var(--c-line)] pt-3">
+          <ServerClock ctx={ctx} state={state} />
         </div>
         <p className="text-sm">{copy('ui.open.opensAt')}</p>
       </Panel>
@@ -495,5 +504,114 @@ function HoldStep({ state, send }: Props) {
         {copy('ui.card.ok')}
       </button>
     </Panel>
+  );
+}
+
+/** 확인 단계: 스테이지별 설명(`step.{stage}.{id}.body`)과 판 통계 요약(`.summary`)이 있으면 함께 보여 준다 */
+function ConfirmStep({ ctx, state, send, def }: Props & { def: DefOf<'confirm'> }) {
+  const base = `step.${ctx.stage.id}.${def.id}`;
+  // 요약 문구의 {변수}는 판 통계 이름 (없으면 0)
+  const names = [...copy(`${base}.summary`).matchAll(/\{(\w+)\}/g)].map((m) => m[1] ?? '');
+  const summaryVars = Object.fromEntries(names.map((n) => [n, state.stats[n] ?? 0]));
+  return (
+    <Panel className="flex flex-col gap-4">
+      <h2 className="text-lg font-bold">{copy(def.title)}</h2>
+      {hasCopy(`${base}.body`) && (
+        <p className="text-sm text-[var(--c-muted)]">{copy(`${base}.body`)}</p>
+      )}
+      {hasCopy(`${base}.summary`) && (
+        <p data-testid="summary" className="text-lg font-bold">
+          {copy(`${base}.summary`, summaryVars)}
+        </p>
+      )}
+      <SiteButton
+        testId="confirm"
+        onClick={() => send('tap', 'step:confirm')}
+        className="h-14 w-full text-lg"
+      >
+        {copy(def.title)}
+      </SiteButton>
+    </Panel>
+  );
+}
+
+function CourseCartStep({ ctx, state, send, def }: Props & { def: DefOf<'courseCart'> }) {
+  if (state.step.kind !== 'courseCart') return null;
+  const local = state.step;
+  const open = state.phase === 'RUNNING';
+  const k = registered(local);
+  const goal = def.completesWhen.count;
+  return (
+    <div className="relative flex flex-col gap-3 pb-24 md:pb-0">
+      <Panel className="flex flex-col gap-1 text-sm">
+        <p className="text-[var(--c-muted)]">
+          {copy('brand.courseReg.school')} · {copy('brand.courseReg.student')}
+        </p>
+        <p className="font-bold">
+          {open ? copy('ui.course.goal', { n: goal, k }) : copy('ui.course.opensAt')}
+        </p>
+        <ServerClock ctx={ctx} state={state} />
+      </Panel>
+      <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--c-line)] bg-[var(--c-paper)]">
+        <table className="w-full border-collapse text-sm">
+          <tbody>
+            {def.courseCart.courses.map((c) => {
+              const st = local.courses[c.id]?.status ?? 'idle';
+              const cart = local.cart[c.id] ?? 0;
+              const hot = cart > c.capacity;
+              return (
+                <tr
+                  key={c.id}
+                  data-testid={`course-${c.id}`}
+                  data-status={st}
+                  className="border-b border-[var(--c-line)] last:border-b-0"
+                >
+                  <td className="p-3 align-top">
+                    <p className="font-bold">{copy(c.name)}</p>
+                    <p className="text-xs text-[var(--c-muted)]">
+                      {copy(`slot.${c.slot}`)} · {copy('ui.course.credits', { n: c.credits })}
+                    </p>
+                    <p
+                      className={`text-xs tabular-nums ${hot ? 'font-bold text-[var(--c-danger)]' : 'text-[var(--c-muted)]'}`}
+                    >
+                      {copy('ui.course.cart', { n: cart, cap: c.capacity })}
+                    </p>
+                  </td>
+                  <td className="w-28 p-3 text-right align-middle">
+                    <SiteButton
+                      testId={`apply-${c.id}`}
+                      variant={st === 'idle' ? 'primary' : 'quiet'}
+                      disabled={st === 'success'}
+                      onClick={() => send('tap', `step:apply:${c.id}`)}
+                      className="w-full whitespace-nowrap px-2 text-sm"
+                    >
+                      {copy(`ui.course.${st === 'idle' ? 'apply' : st}`)}
+                    </SiteButton>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="fixed inset-x-0 bottom-0 z-10 border-t border-[var(--c-line)] bg-[var(--c-paper)] px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:border-0 md:bg-transparent md:p-0">
+        <SiteButton
+          testId="course-done"
+          onClick={() => send('tap', 'step:done')}
+          variant={k >= goal ? 'primary' : 'muted'}
+          className="w-full"
+        >
+          {copy('ui.course.done')}
+        </SiteButton>
+      </div>
+      {local.popup && (
+        <SitePopup onOk={() => send('tap', 'step:popup-ok')} okLabel={copy('ui.course.ok')}>
+          <span className="block text-xs text-[var(--c-muted)]">
+            {copy(def.courseCart.courses.find((c) => c.id === local.popup?.course)?.name ?? '')}
+          </span>
+          {copy(`ui.course.popup.${local.popup.kind}`)}
+        </SitePopup>
+      )}
+    </div>
   );
 }

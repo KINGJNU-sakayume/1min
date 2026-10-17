@@ -420,8 +420,8 @@ class Draft {
       return;
     }
     if (s.phase === 'PREROLL') {
-      // 정각 전에는 "예매하기"만 의미가 있다
-      if (this.stepDef.kind === 'openButton') this.stepInputRaw(input);
+      // 정각 전: 카드는 아직 없다. 단계가 정각 전 입력을 판단한다 (EARLY, "기간이 아닙니다" 등)
+      this.stepInputRaw(input);
       return;
     }
     if (input.target.startsWith('card:')) {

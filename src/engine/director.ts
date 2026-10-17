@@ -6,7 +6,7 @@ import type { Anchor, CardDef, EngineContent, Schedule, ScheduleEntry, StageJson
 /**
  * 디렉터 (hazard-system §5): 시드와 난이도 예산으로 카드 스케줄을 판 시작 전에 전부 계산한다.
  * - window가 없는 카드는 판 시작 기준 틱에, 램프 가중치를 따라 배치한다.
- * - window가 있는 카드는 해당 단계 진입 후 offset 틱에 뜬다 (결정 0002 #18).
+ * - window가 있는 카드는 해당 단계 진입 후 offset 틱에 뜬다 (결정 0003 #18).
  * 결과는 불변 데이터이고 엔진은 읽기만 한다.
  */
 

@@ -1,5 +1,6 @@
 import type { Input, StepJson, StepLocal } from '../types';
 import { same, type StepCtx, type StepUpdate } from './context';
+import { courseCart } from './courseCart';
 import { choose, payment, quantity } from './forms';
 import { queue } from './queue';
 import { seatMap } from './seatMap';
@@ -7,7 +8,7 @@ import { confirm, hold, openButton } from './simple';
 import { textInput } from './textInput';
 
 /**
- * 단계 종류(kind) → 핸들러. 새 kind는 여기에 case를 더한다 (엔진 코어 변경 지점, 결정 0002 참고).
+ * 단계 종류(kind) → 핸들러. 새 kind는 여기에 case를 더한다 (엔진 코어 변경 지점, 결정 0003 참고).
  * local.kind가 def.kind와 다르면(되돌림 직후 등) 아무것도 하지 않는다.
  */
 
@@ -27,6 +28,8 @@ export function stepInit(def: StepJson, ctx: StepCtx): StepLocal {
       return payment.init();
     case 'choose':
       return choose.init(def, ctx);
+    case 'courseCart':
+      return courseCart.init(def, ctx);
     case 'hold':
       return hold.init();
     case 'confirm':
@@ -55,6 +58,8 @@ export function stepInput(
       return local.kind === 'payment' ? payment.input(def, local, input, ctx) : same(local);
     case 'choose':
       return local.kind === 'choose' ? choose.input(def, local, input, ctx) : same(local);
+    case 'courseCart':
+      return local.kind === 'courseCart' ? courseCart.input(def, local, input, ctx) : same(local);
     case 'hold':
       return hold.input(def, { kind: 'hold' }, input);
     case 'confirm':
@@ -64,6 +69,8 @@ export function stepInput(
 
 export function stepTick(def: StepJson, local: StepLocal, ctx: StepCtx): StepUpdate<StepLocal> {
   if (def.kind === 'queue' && local.kind === 'queue') return queue.tick(def, local, ctx);
+  if (def.kind === 'courseCart' && local.kind === 'courseCart')
+    return courseCart.tick(def, local, ctx);
   return same(local);
 }
 
@@ -75,6 +82,8 @@ export function stepHook(def: StepJson, local: StepLocal, hook: string, ctx: Ste
   if (def.kind === 'quantity' && local.kind === 'quantity') return quantity.hook(def, local, name);
   if (def.kind === 'textInput' && local.kind === 'textInput')
     return textInput.hook(def, local, name, ctx);
+  if (def.kind === 'courseCart' && local.kind === 'courseCart')
+    return courseCart.hook(def, local, name, ctx);
   return local;
 }
 

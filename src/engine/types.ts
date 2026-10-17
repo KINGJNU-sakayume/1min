@@ -118,6 +118,27 @@ export interface ChooseLocal {
   kind: 'choose';
   order: readonly string[];
 }
+export type CourseStatus = 'idle' | 'pending' | 'success' | 'full' | 'blocked';
+export interface CourseState {
+  status: CourseStatus;
+  /** pending이면 결과가 확정되는 틱 */
+  resolveAt: number;
+  /** late-full 카드에 걸린 신청 */
+  forceFull: boolean;
+}
+export interface CourseCartLocal {
+  kind: 'courseCart';
+  courses: Readonly<Record<string, CourseState>>;
+  /** 화면에 보이는 장바구니 인원 */
+  cart: Readonly<Record<string, number>>;
+  /** 숨은 마감 틱 (null = 마감 없음) */
+  fullAt: Readonly<Record<string, number | null>>;
+  popup: { kind: 'notPeriod' | 'full' | 'blocked' | 'overlap'; course: string } | null;
+  notPeriodUntil: number;
+  slowUntil: number;
+  lateFullArmed: boolean;
+  blockArmed: boolean;
+}
 export interface SimpleLocal {
   kind: 'openButton' | 'hold' | 'confirm';
 }
@@ -128,6 +149,7 @@ export type StepLocal =
   | QuantityLocal
   | PaymentLocal
   | ChooseLocal
+  | CourseCartLocal
   | SimpleLocal;
 
 export interface RunState {

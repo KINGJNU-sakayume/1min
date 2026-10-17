@@ -137,6 +137,42 @@ export const stepSchema = z.discriminatedUnion('kind', [
   }),
   z.object({
     ...stepCommon,
+    kind: z.literal('courseCart'),
+    /** 신청 성공이 count 이상일 때 "신청 완료"를 누르면 통과 */
+    completesWhen: z.object({
+      type: z.literal('coursesRegistered'),
+      count: z.number().int().positive(),
+    }),
+    courseCart: z.object({
+      courses: z
+        .array(
+          z.object({
+            id: partSchema,
+            name: copyRefSchema,
+            credits: z.number().int().min(1).max(4),
+            /** 시간표 칸. 같은 칸끼리는 함께 신청할 수 없다 (S59) */
+            slot: z.string().regex(/^[a-z]+-\d+$/),
+            capacity: z.number().int().positive(),
+            /** 장바구니(수강희망) 인원 (layout 스트림). 정원 이하면 마감되지 않는다 (S59) */
+            cartCount: intRangeSchema,
+          }),
+        )
+        .min(2),
+      /** 마감 틱 = 정각 + fillBaseTicks × 정원 / 담은 인원 (± fillJitter) */
+      fillBaseTicks: posTicksSchema,
+      fillJitter: z.number().min(0).max(1),
+      /** 신청 버튼 → 결과까지 서버 지연 (realism-spec §2.2 pending) */
+      pendingTicks: intRangeSchema,
+      /** not-period-popup 카드: 정각 뒤에도 "기간이 아닙니다"가 이어지는 길이 (S56) */
+      notPeriodCardTicks: posTicksSchema,
+      /** infinite-loading 카드: 이 동안 누른 신청은 이만큼 더 오래 처리 중 (S55) */
+      slowExtraTicks: posTicksSchema,
+      /** late-full 카드: 다음 신청은 이만큼 처리 중이다가 정원 초과로 끝난다 (S55) */
+      lateFullExtraTicks: posTicksSchema,
+    }),
+  }),
+  z.object({
+    ...stepCommon,
     kind: z.literal('confirm'),
     completesWhen: z.object({ type: z.literal('confirmed') }),
   }),

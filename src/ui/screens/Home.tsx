@@ -34,7 +34,7 @@ export function Home({
   const stage = stages.get(stageId);
   const tutorial = stage?.tutorial === true;
   const valid = isValidSeedCode(code);
-  // 공유받은 시드 링크의 스테이지는 잠겨 있어도 바로 할 수 있다 (결정 0002 #27)
+  // 공유받은 시드 링크의 스테이지는 잠겨 있어도 바로 할 수 있다 (결정 0003 #27)
   const unlocked = isUnlocked(order, stageId, store) || initial?.stageId === stageId;
 
   return (
