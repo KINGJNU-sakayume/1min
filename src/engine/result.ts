@@ -22,6 +22,8 @@ export interface RunResult {
   lateCards: number;
   synergies: string[];
   judgment: Judgment | null;
+  /** 판이 끝난 순간의 단계 (한 줄 원인용) */
+  endStepId: string | null;
   stats: Record<string, number>;
   titleId: string;
   title: string;
@@ -52,6 +54,7 @@ export function computeResult(ctx: RunContext, s: RunState): RunResult {
     lateCards: timeline.filter((t) => t.status === 'resolved' && t.late).length,
     synergies: [...s.synergies],
     judgment: s.judgment,
+    endStepId: ctx.stage.steps[s.stepIndex]?.id ?? null,
     stats: { ...s.stats },
     timeline,
   };

@@ -12,3 +12,10 @@ export function copy(keyOrRef: string, vars?: Record<string, string | number>): 
   if (!vars) return text;
   return text.replace(/\{(\w+)\}/g, (m, name: string) => (name in vars ? String(vars[name]) : m));
 }
+
+export function hasCopy(keyOrRef: string): boolean {
+  const key = keyOrRef.startsWith(COPY_REF_PREFIX)
+    ? keyOrRef.slice(COPY_REF_PREFIX.length)
+    : keyOrRef;
+  return key in table;
+}

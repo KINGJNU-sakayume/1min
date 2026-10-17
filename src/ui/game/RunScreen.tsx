@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { remainingTicks } from '../../engine/reducer';
 import type { EngineEvent, Input, RunContext, RunState } from '../../engine/types';
-import { copy } from '../../content/copy';
+import { copy, hasCopy } from '../../content/copy';
 import { loadContent } from '../../content/load';
 import { playFeedback, unlockAudio } from '../feedback';
 import { themeStyle } from '../theme';
@@ -69,6 +69,8 @@ export function RunScreen({
   const steps = ctx.stage.steps;
   const locked = state.tick < state.lockUntil;
   const stepDef = steps[state.stepIndex];
+  const urlKey = ctx.stage.brand.name.replace(/\.name$/, '.url');
+  const hint = ctx.stage.tutorial && stepDef ? `tutorial.hint.${stepDef.id}` : null;
 
   const site = (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--c-surface)]">
@@ -81,11 +83,19 @@ export function RunScreen({
         </span>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4" data-testid="site">
-        <div className={mode === 'pc' ? 'mx-auto max-w-4xl' : ''}>
+        <div className={`flex flex-col gap-3 ${mode === 'pc' ? 'mx-auto max-w-4xl' : ''}`}>
+          {hint && hasCopy(hint) && state.phase === 'RUNNING' && (
+            <p
+              data-testid="hint"
+              className="rounded-[var(--radius)] border-2 border-dashed border-[var(--c-primary)] bg-[var(--c-paper)] p-3 text-sm font-bold"
+            >
+              {copy(hint)}
+            </p>
+          )}
           <StepView ctx={ctx} state={state} send={send} mode={mode} theme={theme} />
         </div>
       </div>
-      <CardLayer ctx={ctx} state={state} send={send} />
+      <CardLayer ctx={ctx} state={state} send={send} tutorial={ctx.stage.tutorial === true} />
       {locked && (
         <div
           className="absolute inset-0 z-40 flex items-center justify-center bg-[var(--c-paper)]/70"
@@ -128,7 +138,7 @@ export function RunScreen({
                 <i className="h-3 w-3 rounded-full bg-game-line" />
               </span>
               <span className="ml-2 flex-1 truncate rounded-md bg-white px-3 py-1 text-xs text-game-muted">
-                {copy('brand.ticketing.url')}
+                {hasCopy(urlKey) ? copy(urlKey) : ''}
               </span>
             </div>
             {site}

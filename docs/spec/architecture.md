@@ -14,7 +14,7 @@ content/                JSON 데이터 + zod 스키마 (정본 타입)
   index.ts              JSON 원본 목록 (새 파일은 여기에 한 줄)
 src/content/            파싱(load.ts) · 교차 검증(validate.ts) · 금지어(forbidden.ts) · 문구(copy.ts)
 src/engine/             결정론 엔진 — DOM·React·실제 시계·Math.random 금지 (ESLint 강제)
-src/ui/                 React 화면 (M2~)
+src/ui/                 React 화면: game/(루프·단계·카드·HUD), screens/(홈·결과), storage·share·progression·feedback
 scripts/                check-content(빌드 게이트), balance-report(개발용)
 ```
 
@@ -73,6 +73,11 @@ scripts/                check-content(빌드 게이트), balance-report(개발�
 | 상태 머신·정각 판정 경계·단계·카드 효과·런타임 불변식 | `src/engine/reducer.test.ts` |
 | 리플레이 해시 (100 시드, 몽키 입력) | `src/engine/replay.test.ts` |
 | 솔버 봇: 난이도 1~5 × 200 시드 검증 | `src/engine/solver.test.ts` |
+| 튜토리얼: 고정 스케줄, 안내 봇 100% 성공 | `src/engine/tutorial.test.ts` |
+| 저장소 (깨진 값·용량 초과·접근 불가) | `src/ui/storage.test.ts` |
+| 공유 텍스트 형식·결정성 | `src/ui/share.test.ts` |
+| 테마 대비 4.5:1 | `src/content/theme.test.ts` |
+| e2e: 한 판 끝까지·튜토리얼·해금·설정·공유·localStorage 차단 | `e2e/*.spec.ts` |
 | 금지어 검사기 | `src/content/forbidden.test.ts` |
 
 밸런스 확인: `npx tsx scripts/balance-report.ts [stageId]` (솔버·보통 사람 봇의 남은 시간, 실제로 뜬 카드 수).

@@ -80,6 +80,16 @@ export function crossValidate(c: ParsedContent): string[] {
       if (stage.difficulty.length !== 1 || stage.difficulty[0]?.level !== 0) {
         errors.push(`${where}: 튜토리얼은 난이도 0 하나만`);
       }
+      // 튜토리얼은 해결 방법을 화면에 직접 안내한다 (game-rules §10)
+      for (const step of stage.steps) {
+        if (!hasCopy(`tutorial.hint.${step.id}`))
+          errors.push(`${where}: 안내 문구 없음 tutorial.hint.${step.id}`);
+      }
+      const fixedName = stage.difficulty[0]?.fixedSchedule;
+      for (const e of (fixedName ? engine.fixed.get(fixedName)?.entries : undefined) ?? []) {
+        if (!hasCopy(`tutorial.hint.card.${e.card}`))
+          errors.push(`${where}: 안내 문구 없음 tutorial.hint.card.${e.card}`);
+      }
     } else {
       if (stage.difficulty.length !== 6) errors.push(`${where}: difficulty는 6개`);
       stage.difficulty.forEach((d, i) => {

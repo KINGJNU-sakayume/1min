@@ -102,3 +102,21 @@ test('정각 전에 누르면 "아직 오픈 전입니다"', async ({ page }) =>
   await page.getByTestId('open').click();
   await expect(page.getByText('아직 오픈 전입니다')).toBeVisible();
 });
+
+test('결과 화면: 타임라인·공유 복사·같은 판 복수전', async ({ page, context, browserName }) => {
+  test.setTimeout(120_000);
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => undefined);
+  await page.goto('./?seed=ticketing%7C3%7CK7M2Q');
+  await playOnce(page);
+  await expect(page.getByTestId('result-cause')).not.toBeEmpty();
+  await page.getByTestId('share').click();
+  await expect(page.getByTestId('share-note')).toBeVisible();
+  if (browserName === 'chromium') {
+    const text = await page.evaluate(() => navigator.clipboard.readText());
+    expect(text).toContain('1분 전');
+    expect(text).toContain('#K7M2Q');
+    expect(text).toContain('?seed=ticketing%7C3%7CK7M2Q');
+  }
+  await page.getByTestId('revenge').click();
+  await expect(page.getByTestId('ready')).toBeVisible();
+});

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CardDef, CardRuntime, RunContext, RunState, Action } from '../../engine/types';
-import { copy } from '../../content/copy';
+import { copy, hasCopy } from '../../content/copy';
 import { SiteButton } from './parts';
 
 type Send = (action: Action, target: string, value?: string) => void;
@@ -9,7 +9,17 @@ type Send = (action: Action, target: string, value?: string) => void;
  * 방해 카드 표시. 카드 데이터(effect.overlay·resolve)만 보고 그린다 — 카드별 코드 분기 없음.
  * 텔레그래프는 작은 예고, 활성은 overlay 종류대로.
  */
-export function CardLayer({ ctx, state, send }: { ctx: RunContext; state: RunState; send: Send }) {
+export function CardLayer({
+  ctx,
+  state,
+  send,
+  tutorial,
+}: {
+  ctx: RunContext;
+  state: RunState;
+  send: Send;
+  tutorial: boolean;
+}) {
   const live = state.cards.filter((c) => c.status === 'telegraph' || c.status === 'active');
   if (live.length === 0) return null;
   return (
@@ -18,7 +28,16 @@ export function CardLayer({ ctx, state, send }: { ctx: RunContext; state: RunSta
         const def = ctx.defs[c.idx];
         if (!def) return null;
         if (c.status === 'telegraph') return <Telegraph key={c.idx} />;
-        return <ActiveCard key={c.idx} c={c} def={def} ctx={ctx} send={send} />;
+        return (
+          <ActiveCard
+            key={c.idx}
+            c={c}
+            def={def}
+            ctx={ctx}
+            send={send}
+            hint={tutorial ? `tutorial.hint.card.${def.id}` : null}
+          />
+        );
       })}
     </>
   );
@@ -46,11 +65,13 @@ function ActiveCard({
   def,
   ctx,
   send,
+  hint,
 }: {
   c: CardRuntime;
   def: CardDef;
   ctx: RunContext;
   send: Send;
+  hint: string | null;
 }) {
   const target = (part: string) => `card:${c.idx}:${part}`;
   const title = copy(`${def.copyKey}.title`);
@@ -58,6 +79,15 @@ function ActiveCard({
   const r = def.resolve;
   const entry = ctx.schedule.entries[c.idx];
 
+  const hintText =
+    hint && hasCopy(hint) ? (
+      <p
+        data-testid="card-hint"
+        className="rounded bg-[var(--c-surface)] px-2 py-1 text-xs font-bold text-[var(--c-ink)]"
+      >
+        {copy(hint)}
+      </p>
+    ) : null;
   const actions = (() => {
     switch (r.kind) {
       case 'tap':
@@ -129,6 +159,7 @@ function ActiveCard({
             <p className="text-xs opacity-80">{title}</p>
             <p className="text-sm">{body}</p>
           </button>
+          {hintText}
           {actions}
         </div>
       );
@@ -190,6 +221,7 @@ function ActiveCard({
           <div className="w-full max-w-sm rounded-[var(--radius)] bg-[var(--c-paper)] p-5 shadow-lg">
             <p className="mb-1 font-bold">{title}</p>
             <p className="mb-4 text-sm">{body}</p>
+            {hintText && <div className="mb-3">{hintText}</div>}
             {actions}
           </div>
         </div>
