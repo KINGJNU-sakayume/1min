@@ -34,7 +34,7 @@
 - 모르는 실제 서비스 디테일은 **지어내지 말고** `[미확인]`으로 두고 파라미터/스킨으로 분리한 뒤 소유자에게 질문한다.
 - 근거 라벨(확인/2차/기억/추측/미확인)을 문서와 JSON `evidence`에 유지한다.
 - 명령
-  - `npm run dev` 개발 서버 (`/1min/`), `npm run build` 콘텐츠 검사 + 타입 검사 + 빌드 + `404.html`
+  - `npm run dev` 개발 서버 (`/1min/`), `npm run build` 콘텐츠 검사 + 타입 검사 + 빌드 + `404.html` + `sw.js`
   - `npm test` Vitest, `npm run lint`, `npm run typecheck`, `npm run format` / `format:check`
   - `npm run check:content` zod 스키마·교차 검증·금지어 검사 (`scripts/forbidden-words.txt`)
   - `npm run e2e` Playwright (먼저 `npm run build`; 이 컨테이너는 `/opt/pw-browsers/chromium` 사용)

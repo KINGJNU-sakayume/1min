@@ -148,7 +148,7 @@
 | ③ | 핀치·더블탭 줌 억제 | `touch-action: manipulation` + `gesturestart` preventDefault. 뷰포트 `user-scalable=no`는 접근성 때문에 쓰지 않음 | 지원 true | **실기기 확인 필요**: 좌석도에서 두 손가락 확대 시 페이지 전체가 확대되는가 |
 | ④ | 오디오 잠금 해제 | 첫 사용자 탭에서 `AudioContext.resume()` + 짧은 비프 | `running` | **실기기 확인 필요**: 무음 스위치 상태에서 소리가 나는가, 첫 탭 전에는 안 나는가 |
 | ⑤ | Web Share / 클립보드 | `navigator.share` → `clipboard.writeText` → `execCommand('copy')` 폴백 | share 없음 → clipboard 성공 | **실기기 확인 필요**: 공유 시트가 뜨는가, 닫으면 복사로 넘어가는가 |
-| ⑥ | 홈 화면 추가 후 전체 화면 | M5에서 매니페스트·SW 추가 후 재확인 | 해당 없음 | **실기기 확인 필요 (M5)** |
+| ⑥ | 홈 화면 추가 후 전체 화면 | 매니페스트(standalone, scope `/1min/`), apple-touch-icon, 서비스 워커 사전 캐시 | 오프라인 실행 e2e 통과 | **실기기 확인 필요**: `plan/release-checklist.md` §2 |
 | ⑦ | localStorage | 512KB 쓰기·삭제, 모든 접근 try/catch | 성공 | **실기기 확인 필요**: 프라이빗 모드에서 앱이 정상 동작하는가. 7일 미사용 시 삭제 정책(ITP)은 [기억] |
 | 참고 | 진동 `navigator.vibrate` | 있으면 사용, 없으면 시각 연출 | true(Chromium) | iOS 사파리는 미지원으로 [기억] → 시각 연출을 기본으로 설계 |
 

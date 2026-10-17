@@ -1,0 +1,22 @@
+{
+  "name": "1분 전",
+  "short_name": "1분 전",
+  "description": "한국인만 아는 1분짜리 지옥을 60초에 체험하는 개인용 코미디 웹게임. 모든 이름은 가상입니다.",
+  "lang": "ko",
+  "start_url": "/1min/",
+  "scope": "/1min/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f6f8",
+  "theme_color": "#1e2350",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
