@@ -15,7 +15,8 @@ content/                JSON 데이터 + zod 스키마 (정본 타입)
 src/content/            파싱(load.ts) · 교차 검증(validate.ts) · 금지어(forbidden.ts) · 문구(copy.ts)
 src/engine/             결정론 엔진 — DOM·React·실제 시계·Math.random 금지 (ESLint 강제)
 src/ui/                 React 화면: game/(루프·단계·카드·HUD), screens/(홈·결과), storage·share·progression·feedback
-scripts/                check-content(빌드 게이트), balance-report(개발용)
+scripts/                check-content(빌드 게이트), build-sw·spa-fallback(빌드 후처리), balance-report·make-icons(개발용)
+public/                 manifest.webmanifest, icons/
 ```
 
 의존 방향: `ui → content(load) → engine → content/schema(타입만)`. 엔진은 JSON을 직접 import하지 않고 파싱된 `EngineContent`를 인자로 받는다.
