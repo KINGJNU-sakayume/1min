@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`디렉터: 결정론 > 골든 스냅샷 (밸런스를 바꾸면 의도적으로 갱신) 1`] = `
+{
+  "l1": [
+    "common.popup-blocked@364",
+    "common.keyboard-cover@captcha+13",
+    "ticketing.seat-snipe@seat+22",
+  ],
+  "l5": [
+    "common.double-tab@245",
+    "common.server-lag@297",
+    "common.captcha@300",
+    "common.messenger-ping@517",
+    "ticketing.refresh-temptation@queue+8",
+    "ticketing.one-account-one-queue@queue+23",
+    "ticketing.zone-click-limit@seat+20",
+    "ticketing.seat-snipe@seat+29",
+    "ticketing.buyer-birth-typo@buyer+19",
+    "ticketing.bank-transfer-trap@pay+16",
+  ],
+}
+`;

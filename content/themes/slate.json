@@ -1,0 +1,24 @@
+{
+  "id": "slate",
+  "colors": {
+    "primary": "#35546e",
+    "primaryInk": "#ffffff",
+    "surface": "#eef2f5",
+    "paper": "#ffffff",
+    "ink": "#1d2a36",
+    "muted": "#55636f",
+    "line": "#d3dbe2",
+    "seatFree": "#a9c1d4",
+    "seatTaken": "#d3dbe2",
+    "seatMine": "#1d2a36",
+    "danger": "#b42318"
+  },
+  "layout": {
+    "pcMainRatio": 0.66,
+    "seatShape": "square",
+    "radius": 4,
+    "popupStyle": "center",
+    "queueNoticePosition": "below"
+  },
+  "evidence": "[추측] 학내 시스템 느낌의 청회색 + 흰색 (brand-and-tone §3.3). 실화면 대조 대상 아님(가상 LMS)"
+}

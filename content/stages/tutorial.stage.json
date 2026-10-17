@@ -1,0 +1,83 @@
+{
+  "id": "tutorial",
+  "version": 1,
+  "mode": "deadline",
+  "tutorial": true,
+  "title": "copy:stage.tutorial.title",
+  "brand": {
+    "name": "copy:brand.lms.name",
+    "fictional": true,
+    "disclaimer": "copy:common.parodyNotice",
+    "forbidden": []
+  },
+  "durationTicks": 1800,
+  "steps": [
+    {
+      "id": "file",
+      "kind": "choose",
+      "title": "copy:step.tutorial.file",
+      "completesWhen": { "type": "pick" },
+      "choose": {
+        "options": [
+          { "id": "final", "label": "copy:step.tutorial.file.final", "correct": true },
+          { "id": "draft", "label": "copy:step.tutorial.file.draft", "correct": false },
+          { "id": "meme", "label": "copy:step.tutorial.file.meme", "correct": false }
+        ],
+        "wrongLockTicks": 10
+      }
+    },
+    {
+      "id": "upload",
+      "kind": "confirm",
+      "title": "copy:step.tutorial.upload",
+      "completesWhen": { "type": "confirmed" }
+    },
+    {
+      "id": "submit",
+      "kind": "confirm",
+      "title": "copy:step.tutorial.submit",
+      "completesWhen": { "type": "confirmed" }
+    }
+  ],
+  "deck": {
+    "common": ["common.messenger-ping", "common.popup-blocked"],
+    "specific": [],
+    "mustInclude": { "specificMin": 0 }
+  },
+  "difficulty": [{ "level": 0, "budget": 3, "maxSlots": 1, "fixedSchedule": "tutorial" }],
+  "results": [
+    {
+      "id": "success",
+      "when": { "outcome": "success" },
+      "title": "copy:result.tutorial.success",
+      "line": "copy:result.tutorial.success.line"
+    },
+    {
+      "id": "fail",
+      "when": { "outcome": "fail" },
+      "title": "copy:result.tutorial.fail",
+      "line": "copy:result.tutorial.fail.line"
+    }
+  ],
+  "theme": { "tokens": "slate" },
+  "evidence": [
+    {
+      "claim": "마감 직전 과제 제출 (원작 11:59 계보, 독자 설계)",
+      "level": "confirmed",
+      "sources": ["S2"]
+    },
+    {
+      "claim": "파일 선택 후 제출 버튼을 따로 눌러야 한다",
+      "level": "secondary",
+      "sources": ["S57"]
+    }
+  ],
+  "legal": {
+    "noRealBrands": true,
+    "noRealPeople": true,
+    "noRealInputRequested": true,
+    "disclaimerShown": true,
+    "assetLicenses": "docs/assets-licenses.md",
+    "reviewedAt": "2026-10-17"
+  }
+}

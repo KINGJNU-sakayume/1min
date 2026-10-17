@@ -1,0 +1,7 @@
+{
+  "name": "tutorial",
+  "entries": [
+    { "card": "common.messenger-ping", "startTick": 60 },
+    { "card": "common.popup-blocked", "startTick": 200 }
+  ]
+}

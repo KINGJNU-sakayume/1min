@@ -1,0 +1,24 @@
+{
+  "id": "raspberry",
+  "colors": {
+    "primary": "#c2255c",
+    "primaryInk": "#ffffff",
+    "surface": "#fff4e3",
+    "paper": "#ffffff",
+    "ink": "#1e2350",
+    "muted": "#5c5f7a",
+    "line": "#e6dccb",
+    "seatFree": "#f2a7c0",
+    "seatTaken": "#d4d1dc",
+    "seatMine": "#1e2350",
+    "danger": "#b42318"
+  },
+  "layout": {
+    "pcMainRatio": 0.66,
+    "seatShape": "jellybean",
+    "radius": 12,
+    "popupStyle": "center",
+    "queueNoticePosition": "below"
+  },
+  "evidence": "[미확인] 레이아웃 비율·팝업 위치는 기억 수준. 실제 화면을 보고 이 파일만 보정한다 (realism-spec §6). 색은 brand-and-tone §3.3 가상 팔레트"
+}

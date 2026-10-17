@@ -1,0 +1,45 @@
+{
+  "tickMs": 50,
+  "prerollTicks": 60,
+  "judgment": { "perfectTicks": 3, "goodTicks": 12, "lateTicks": 40, "earlyLockTicks": 16 },
+  "cooldownMsDefault": 8000,
+  "nominalActiveMs": 4000,
+  "telegraphMinMsForPunishing": 400,
+  "maxSameSurfaceRun": 2,
+  "ramp": [
+    { "untilPct": 16.7, "weight": 0.15 },
+    { "untilPct": 41.7, "weight": 0.4 },
+    { "untilPct": 66.7, "weight": 0.35 },
+    { "untilPct": 100, "weight": 0.1 }
+  ],
+  "lastStartPct": 92,
+  "placementAttempts": 40,
+  "stepAnchorOffsetTicks": { "min": 6, "max": 30 },
+  "pendingMaxTicks": 100,
+  "squeezeMinRemainTicks": 60,
+  "maxSeedRetries": 20,
+  "lateResolveFraction": 0.6,
+  "stars": { "twoStarRemainingTicks": 100 },
+  "assistDurationFactor": 1.5,
+  "solver": {
+    "reactionTicks": 5,
+    "actionGapTicks": 3,
+    "typeTicksPerChar": 3,
+    "openDelayTicks": 0,
+    "stepReadTicks": 6
+  },
+  "guided": {
+    "reactionTicks": 20,
+    "actionGapTicks": 10,
+    "typeTicksPerChar": 8,
+    "openDelayTicks": 20,
+    "stepReadTicks": 40
+  },
+  "humanish": {
+    "reactionTicks": 12,
+    "actionGapTicks": 6,
+    "typeTicksPerChar": 5,
+    "openDelayTicks": 8,
+    "stepReadTicks": 24
+  }
+}

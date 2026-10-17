@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 1분 전: 11:59를 가리키는 시계 (자체 제작, 글꼴 없음) -->
+  <rect width="512" height="512" rx="112" fill="#c2255c"/>
+  <circle cx="256" cy="268" r="164" fill="#ffffff"/>
+  <g fill="#1e2350">
+    <circle cx="398" cy="268" r="10"/>
+    <circle cx="256" cy="410" r="10"/>
+    <circle cx="114" cy="268" r="10"/>
+  </g>
+  <g stroke="#1e2350" stroke-linecap="round">
+    <line x1="256" y1="268" x2="255" y2="186" stroke-width="30"/>
+    <line x1="256" y1="268" x2="241" y2="128" stroke-width="12"/>
+  </g>
+  <circle cx="256" cy="268" r="18" fill="#1e2350"/>
+</svg>

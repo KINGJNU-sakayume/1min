@@ -1,0 +1,24 @@
+{
+  "id": "meadow",
+  "colors": {
+    "primary": "#2e6b3a",
+    "primaryInk": "#ffffff",
+    "surface": "#fbf8e6",
+    "paper": "#ffffff",
+    "ink": "#1f2a22",
+    "muted": "#56605a",
+    "line": "#d9d6c3",
+    "seatFree": "#a8cfa9",
+    "seatTaken": "#d9d6c3",
+    "seatMine": "#1f2a22",
+    "danger": "#b42318"
+  },
+  "layout": {
+    "pcMainRatio": 0.7,
+    "seatShape": "square",
+    "radius": 2,
+    "popupStyle": "center",
+    "queueNoticePosition": "above"
+  },
+  "evidence": "[미확인] 관공서풍 쇼핑몰 느낌: 풀빛 + 회색 + 연노랑, 각진 표 (brand-and-tone §3.3). 실제 학교 시스템 색을 쓰지 않는다"
+}
