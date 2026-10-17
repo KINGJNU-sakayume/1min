@@ -136,3 +136,20 @@
 ### 4.3 모바일 특화 확인 항목 (프로토타입 스파이크)
 
 아이폰 사파리/PWA에서 확인할 것: ①키보드 올라올 때 레이아웃(`visualViewport`) ②오버스크롤·당겨서 새로고침 ③핀치 줌 억제 ④오디오 잠금 해제 ⑤Web Share API ⑥홈 화면 추가 후 전체 화면 동작 ⑦localStorage 용량과 삭제 정책. 전부 [미확인]이며 프로토타입 1주차 초반에 스파이크로 해결한다.
+
+#### 스파이크 결과 (M0, 2026-10-16)
+
+도구: `spike.html`(배포 경로 `/1min/spike.html`) + Playwright `e2e/mobile-spike.spec.ts`. 이 개발 환경에는 **Chromium만** 있어 iPhone 13 뷰포트·터치를 Chromium으로 에뮬레이션했다. CI에는 Linux WebKit 잡(`spike-webkit`, 참고용)이 있다. **둘 다 실제 iOS 사파리가 아니므로 모든 항목은 실기기 확인 전까지 확정이 아니다.**
+
+| # | 항목 | 앱의 대응(구현) | Chromium iPhone 에뮬레이션 | 판정 |
+|---|---|---|---|---|
+| ① | 키보드 올라올 때 레이아웃 | `visualViewport` resize/scroll로 하단 확인 버튼을 키보드 위로 이동 | API 있음. 에뮬레이션에선 키보드가 안 떠서 가림 0px | **실기기 확인 필요**: 보안문자 입력 시 "입력완료" 버튼이 키보드 위에 보이는가 |
+| ② | 오버스크롤·당겨서 새로고침 | `body { overscroll-behavior: none }` | 지원 true | **실기기 확인 필요**: 맨 위에서 당겼을 때 새로고침/바운스가 일어나는가 (iOS 16+ 지원으로 [기억]) |
+| ③ | 핀치·더블탭 줌 억제 | `touch-action: manipulation` + `gesturestart` preventDefault. 뷰포트 `user-scalable=no`는 접근성 때문에 쓰지 않음 | 지원 true | **실기기 확인 필요**: 좌석도에서 두 손가락 확대 시 페이지 전체가 확대되는가 |
+| ④ | 오디오 잠금 해제 | 첫 사용자 탭에서 `AudioContext.resume()` + 짧은 비프 | `running` | **실기기 확인 필요**: 무음 스위치 상태에서 소리가 나는가, 첫 탭 전에는 안 나는가 |
+| ⑤ | Web Share / 클립보드 | `navigator.share` → `clipboard.writeText` → `execCommand('copy')` 폴백 | share 없음 → clipboard 성공 | **실기기 확인 필요**: 공유 시트가 뜨는가, 닫으면 복사로 넘어가는가 |
+| ⑥ | 홈 화면 추가 후 전체 화면 | M5에서 매니페스트·SW 추가 후 재확인 | 해당 없음 | **실기기 확인 필요 (M5)** |
+| ⑦ | localStorage | 512KB 쓰기·삭제, 모든 접근 try/catch | 성공 | **실기기 확인 필요**: 프라이빗 모드에서 앱이 정상 동작하는가. 7일 미사용 시 삭제 정책(ITP)은 [기억] |
+| 참고 | 진동 `navigator.vibrate` | 있으면 사용, 없으면 시각 연출 | true(Chromium) | iOS 사파리는 미지원으로 [기억] → 시각 연출을 기본으로 설계 |
+
+실기기 확인 방법: 배포 후 아이폰 사파리에서 `https://<사용자>.github.io/1min/spike.html`을 열고 표의 ✅/❌와 버튼 동작을 확인해 이 표의 "판정" 칸을 갱신한다.
