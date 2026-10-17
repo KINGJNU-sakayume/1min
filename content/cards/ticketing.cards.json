@@ -1,0 +1,168 @@
+{
+  "cards": [
+    {
+      "id": "ticketing.refresh-temptation",
+      "version": 1,
+      "surface": "layout",
+      "counter": "wait",
+      "tags": ["queue", "tempts-refresh"],
+      "cost": 2,
+      "weight": 10,
+      "minDifficulty": 1,
+      "stages": ["ticketing"],
+      "telegraphMs": 0,
+      "activeMs": 6000,
+      "window": { "steps": ["queue"] },
+      "effect": { "overlay": "banner" },
+      "resolve": { "kind": "avoid", "target": "step:refresh" },
+      "failEffect": { "kind": "queueBack", "amount": 12000 },
+      "exclusiveWith": ["tag:blocks-input"],
+      "copyKey": "haz.refreshTemptation",
+      "evidence": { "level": "confirmed", "sources": ["S6", "S10", "S48"] },
+      "touchRisk": "pullToRefresh"
+    },
+    {
+      "id": "ticketing.seat-snipe",
+      "version": 1,
+      "surface": "info",
+      "counter": "tap",
+      "tags": ["seat", "blocks-input"],
+      "cost": 3,
+      "weight": 10,
+      "minDifficulty": 1,
+      "stages": ["ticketing"],
+      "telegraphMs": 400,
+      "activeMs": null,
+      "window": { "steps": ["seat"] },
+      "effect": { "overlay": "modal", "blocksStep": true, "hook": "seatMap.release" },
+      "resolve": { "kind": "tap", "target": "ok" },
+      "failEffect": { "kind": "none" },
+      "exclusiveWith": ["tag:blocks-input"],
+      "copyKey": "haz.seatSnipe",
+      "evidence": {
+        "level": "secondary",
+        "sources": ["S48"],
+        "note": "\"이미 선택된 좌석입니다\" 패턴"
+      }
+    },
+    {
+      "id": "ticketing.zone-click-limit",
+      "version": 1,
+      "surface": "input",
+      "counter": "wait",
+      "tags": ["rate", "seat"],
+      "cost": 2,
+      "weight": 8,
+      "minDifficulty": 2,
+      "stages": ["ticketing"],
+      "telegraphMs": 0,
+      "activeMs": 6000,
+      "window": { "steps": ["seat"] },
+      "effect": {
+        "overlay": "banner",
+        "rateLimit": { "target": "step:zone", "maxTaps": 2, "windowTicks": 20 }
+      },
+      "resolve": { "kind": "none" },
+      "failEffect": { "kind": "lock", "ticks": 60 },
+      "exclusiveWith": ["tag:rate"],
+      "copyKey": "haz.zoneClickLimit",
+      "evidence": { "level": "secondary", "note": "구역 이동 연타 쿨다운" }
+    },
+    {
+      "id": "ticketing.one-account-one-queue",
+      "version": 1,
+      "surface": "overlay",
+      "counter": "choose",
+      "tags": ["queue", "bait"],
+      "cost": 2,
+      "weight": 8,
+      "minDifficulty": 1,
+      "stages": ["ticketing"],
+      "telegraphMs": 0,
+      "activeMs": 5000,
+      "expire": "resolve",
+      "window": { "steps": ["queue"] },
+      "effect": { "overlay": "sheet" },
+      "resolve": {
+        "kind": "choose",
+        "options": [
+          { "id": "join", "label": "copy:haz.oneAccount.join", "correct": false },
+          { "id": "close", "label": "copy:haz.oneAccount.close", "correct": true }
+        ]
+      },
+      "failEffect": { "kind": "queueBack", "amount": 12000 },
+      "copyKey": "haz.oneAccount",
+      "evidence": { "level": "confirmed", "sources": ["S4"] }
+    },
+    {
+      "id": "ticketing.price-zero-qty",
+      "version": 1,
+      "surface": "info",
+      "counter": "tap",
+      "tags": ["price", "blocks-input"],
+      "cost": 2,
+      "weight": 8,
+      "minDifficulty": 3,
+      "stages": ["ticketing"],
+      "telegraphMs": 400,
+      "activeMs": null,
+      "window": { "steps": ["price"] },
+      "effect": { "overlay": "modal", "blocksStep": true, "hook": "quantity.reset" },
+      "resolve": { "kind": "tap", "target": "ok" },
+      "failEffect": { "kind": "none" },
+      "exclusiveWith": ["tag:blocks-input"],
+      "copyKey": "haz.priceZeroQty",
+      "evidence": { "level": "secondary", "sources": ["S54"], "note": "기본가 수량 0매 시작" }
+    },
+    {
+      "id": "ticketing.buyer-birth-typo",
+      "version": 1,
+      "surface": "input",
+      "counter": "tap",
+      "tags": ["buyer", "blocks-input"],
+      "cost": 2,
+      "weight": 8,
+      "minDifficulty": 3,
+      "stages": ["ticketing"],
+      "telegraphMs": 400,
+      "activeMs": null,
+      "window": { "steps": ["buyer"] },
+      "effect": { "overlay": "modal", "blocksStep": true, "hook": "textInput.clear" },
+      "resolve": { "kind": "tap", "target": "ok" },
+      "failEffect": { "kind": "none" },
+      "exclusiveWith": ["tag:blocks-input"],
+      "copyKey": "haz.buyerBirthTypo",
+      "evidence": { "level": "secondary", "sources": ["S54"], "note": "생년월일 6자리 입력" }
+    },
+    {
+      "id": "ticketing.bank-transfer-trap",
+      "version": 1,
+      "surface": "info",
+      "counter": "choose",
+      "tags": ["pay", "bait"],
+      "cost": 3,
+      "weight": 7,
+      "minDifficulty": 2,
+      "stages": ["ticketing"],
+      "telegraphMs": 400,
+      "activeMs": 5000,
+      "expire": "resolve",
+      "window": { "steps": ["pay"] },
+      "effect": { "overlay": "sheet" },
+      "resolve": {
+        "kind": "choose",
+        "options": [
+          { "id": "bank", "label": "copy:haz.bankTransfer.bank", "correct": false },
+          { "id": "keep", "label": "copy:haz.bankTransfer.keep", "correct": true }
+        ]
+      },
+      "failEffect": { "kind": "resetStep", "to": "seat" },
+      "copyKey": "haz.bankTransfer",
+      "evidence": {
+        "level": "secondary",
+        "sources": ["S48", "S54"],
+        "note": "무통장입금 속설. 연출은 압축"
+      }
+    }
+  ]
+}

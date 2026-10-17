@@ -1,6 +1,6 @@
 # 스테이지 작성 형식 (핵심 문서 2/2)
 
-상태: 초안 v0.1 · 정본. 스테이지 콘텐츠는 **JSON 파일**이고, 빌드 때 `zod` 스키마로 검증한다. (코드 구현은 아직 없음.)
+상태: v0.2 · 정본. 스테이지 콘텐츠는 **JSON 파일**이고, 빌드 때 `zod` 스키마(`content/schema/stage.ts`)로 검증한다. 문서와 스키마가 다르면 스키마가 실제 동작이고, 이 문서를 고친다.
 관련: `spec/game-rules.md`, `design/hazard-system.md`
 
 ## 1. 파일 위치와 이름
@@ -62,18 +62,28 @@ content/
 
 ```json
 "steps": [
-  { "id": "open",    "kind": "openButton", "completesWhen": { "type": "openJudged" } },
-  { "id": "queue",   "kind": "queue",      "completesWhen": { "type": "queueZero" }, "queue": { "base": 12000, "perfectFactor": 0.01, "slowFactor": 1.0 } },
-  { "id": "captcha", "kind": "textInput",  "completesWhen": { "type": "inputMatches", "length": 5 } },
-  { "id": "zone",    "kind": "choose",     "completesWhen": { "type": "pick", "from": "zones" } },
-  { "id": "seat",    "kind": "seatMap",    "completesWhen": { "type": "seatHeld" } },
-  { "id": "pay",     "kind": "payment",    "completesWhen": { "type": "paid" }, "timeLimitTicks": 400 }
+  { "id": "open",    "kind": "openButton", "title": "copy:…", "completesWhen": { "type": "openJudged" } },
+  { "id": "queue",   "kind": "queue",      "title": "copy:…", "completesWhen": { "type": "queueZero" },
+    "queue": { "base": 12000, "factors": { "PERFECT": 0.01, "GOOD": 0.05, "LATE": 0.3, "SLOW": 1.0, "EARLY": 1.5 },
+               "waitTicks": { "PERFECT": 160, "GOOD": 240, "LATE": 340, "SLOW": 460, "EARLY": 560 },
+               "jitter": 0.2, "segmentTicks": 10, "pauseChance": 0.25, "rateJitter": { "min": 0.6, "max": 1.8 },
+               "resetTo": 12000, "resetWaitTicks": 500 } },
+  { "id": "captcha", "kind": "textInput",  "completesWhen": { "type": "inputMatches" },
+    "input": { "length": { "min": 5, "max": 6 }, "alphabet": "ABC…", "prompt": "copy:…", "regenerateOnWrong": true } },
+  { "id": "seat",    "kind": "seatMap",    "completesWhen": { "type": "seatHeld" }, "seatMap": { "zones": […], "competitor": {…}, "revealLagTicks": 8 } },
+  { "id": "price",   "kind": "quantity",   "completesWhen": { "type": "qtyAtLeast", "min": 1 }, "quantity": { "initial": 0, "max": 4 }, "skippableAtLevel": 2 },
+  { "id": "buyer",   "kind": "textInput",  "completesWhen": { "type": "inputMatches" }, "input": {…}, "skippableAtLevel": 2 },
+  { "id": "pay",     "kind": "payment",    "completesWhen": { "type": "paid" }, "timeLimitTicks": 400,
+    "onTimeout": { "kind": "resetStep", "to": "seat" }, "payment": {…} }
 ]
 ```
 
-- `kind`는 UI 컴포넌트와 연결되는 **미리 정의된 종류**만 허용한다 (`openButton`, `queue`, `textInput`, `choose`, `seatMap`, `payment`, `upload`, `timetable`, `map` 등). 스테이지 작성자가 새 종류를 만들면 코드 변경이 필요하다.
-- `completesWhen`은 **선언형 조건**이다. 스크립트·함수는 허용하지 않는다. 엔진이 조건 이름별 핸들러를 가진다.
-- `timeLimitTicks`: 해당 단계에 진입한 뒤 제한 시간 (결제 타이머 등).
+- `kind`는 UI 컴포넌트·엔진 핸들러와 연결되는 **미리 정의된 종류**만 허용한다: `openButton`, `queue`, `textInput`, `seatMap`, `quantity`, `payment`, `choose`, `hold`, `confirm` (M4에서 수강신청용 종류 추가 예정). 새 종류는 코드 변경이 필요하다 (`src/engine/steps/index.ts`).
+- `completesWhen`은 **선언형 조건**이다. 스크립트·함수는 허용하지 않는다. kind마다 정해진 type 하나.
+- `timeLimitTicks`: 해당 단계에 진입한 뒤 제한 시간 (결제 타이머 등). `onTimeout`은 실패 효과(`resetStep`, `fatal` 등). 생략하면 판 실패.
+- `skippableAtLevel`: 이 난이도 이하에서는 자동 통과 (realism-spec §1.1의 시간 압축).
+- 대기열 수치의 뜻: `factors`는 시작 인원 배율, `waitTicks`는 판정별 평균 대기 틱, 구간마다 속도를 다시 뽑고 `pauseChance`로 멈춘다 (결정 0002 #19).
+- 티켓팅 단계는 realism-spec §1.1을 따른다 (결정 0002 #1: 구역 선택은 `seat` 안의 탭).
 
 ### 4.2 `lanes` (deadline 모드)
 
@@ -126,6 +136,7 @@ content/
 ]
 ```
 - 위에서부터 첫 일치 결과를 사용한다. **마지막 항목은 반드시 무조건 일치하는 기본값**이어야 한다 (`outcome`만 있는 조건).
+- 조건 필드: `outcome`, `reason`, `remainingTicksLte/Gte`, `failedCardIncludes`+`minCount`, `judgment`(PERFECT~EARLY), `stat: { name, gte }`. `stat` 이름은 엔진 카운터: `queueResets`, `seatConflicts`, `captchaWrong`, `inputWrong`, `rateLimited`, `stepTimeouts`, `stepResets`, `earlyPress`, `lockedInputs`, `blockedInputs`, `wrongChoices`, `ignoredTouched`, `resolved`, `failed`, `resolvedLate`, `maxCombo`, `zeroQty`, `cardWrong`.
 - 성공/실패 각각 최소 3개 칭호를 권장한다.
 
 ## 8. `theme`
@@ -179,59 +190,14 @@ content/
 - [ ] 솔버 봇·퍼징 테스트 통과
 - [ ] 플레이테스트 3명 이상 (성공률이 난이도 목표 범위)
 
-## 12. 완성 예시 (축약판)
+## 12. 완성 예시
 
-`content/stages/ticketing.stage.json`
+실제 파일 `content/stages/ticketing.stage.json`이 완성 예시다 (문서에 사본을 두면 어긋나므로 복사하지 않는다). 최상위 필드 중 이 문서 §2에 더해진 것:
 
-```json
-{
-  "id": "ticketing",
-  "version": 1,
-  "mode": "open",
-  "title": "copy:stage.ticketing.title",
-  "brand": { "name": "copy:brand.ticketing.name", "fictional": true, "disclaimer": "copy:common.parodyNotice", "forbidden": [] },
-  "durationTicks": 1200,
-  "steps": [
-    { "id": "open",    "kind": "openButton", "completesWhen": { "type": "openJudged" } },
-    { "id": "queue",   "kind": "queue",      "completesWhen": { "type": "queueZero" }, "queue": { "base": 12000, "perfectFactor": 0.01, "slowFactor": 1.0 } },
-    { "id": "captcha", "kind": "textInput",  "completesWhen": { "type": "inputMatches", "length": 5 } },
-    { "id": "zone",    "kind": "choose",     "completesWhen": { "type": "pick", "from": "zones" } },
-    { "id": "seat",    "kind": "seatMap",    "completesWhen": { "type": "seatHeld" } },
-    { "id": "pay",     "kind": "payment",    "completesWhen": { "type": "paid" }, "timeLimitTicks": 400 }
-  ],
-  "deck": {
-    "common": ["common.kakao-ping", "common.keyboard-cover", "common.captcha", "common.server-lag", "common.timer-squeeze", "common.popup-blocked", "common.double-tab"],
-    "specific": ["ticketing.refresh-temptation", "ticketing.seat-snipe", "ticketing.zone-click-limit", "ticketing.one-account-one-queue", "ticketing.family-seat-rule"],
-    "mustInclude": { "specificMin": 1 },
-    "weightOverrides": { "ticketing.seat-snipe": 20 }
-  },
-  "difficulty": [
-    { "level": 0, "budget": 3,  "maxSlots": 1, "fixedSchedule": "tutorial" },
-    { "level": 1, "budget": 6,  "maxSlots": 1 },
-    { "level": 2, "budget": 10, "maxSlots": 1 },
-    { "level": 3, "budget": 14, "maxSlots": 2 },
-    { "level": 4, "budget": 18, "maxSlots": 2 },
-    { "level": 5, "budget": 22, "maxSlots": 3 }
-  ],
-  "results": [
-    { "id": "success-close",   "when": { "outcome": "success", "remainingTicksLte": 60 },  "title": "copy:result.ticketing.successClose" },
-    { "id": "success-perfect", "when": { "outcome": "success", "remainingTicksGte": 300 }, "title": "copy:result.ticketing.successPerfect" },
-    { "id": "success-default", "when": { "outcome": "success" }, "title": "copy:result.ticketing.successDefault" },
-    { "id": "fail-sniped",     "when": { "outcome": "fail", "failedCardIncludes": "ticketing.seat-snipe", "minCount": 2 }, "title": "copy:result.ticketing.failSniped" },
-    { "id": "fail-queue",      "when": { "outcome": "fail", "reason": "queueReset" }, "title": "copy:result.ticketing.failQueue" },
-    { "id": "fail-timeout",    "when": { "outcome": "fail", "reason": "timeout" }, "title": "copy:result.ticketing.failTimeout" },
-    { "id": "fail-default",    "when": { "outcome": "fail" }, "title": "copy:result.ticketing.failDefault" }
-  ],
-  "theme": { "tokens": "dd-pyo", "seatShape": "jellybean", "font": "copy:font.default" },
-  "evidence": [
-    { "claim": "대기열 새로고침 공포", "level": "confirmed", "sources": ["S6", "S10"] },
-    { "claim": "1계정 1대기열", "level": "confirmed", "sources": ["S4"] },
-    { "claim": "좌석 경합", "level": "guess" }
-  ],
-  "legal": { "noRealBrands": true, "noRealPeople": true, "noRealInputRequested": true, "disclaimerShown": true, "assetLicenses": "docs/assets-licenses.md", "reviewedAt": "2026-10-16" }
-}
-```
+- `tutorial`(선택): `true`면 difficulty가 난이도 0 하나만 있어도 된다 (결정 0002 #9).
+- `brand.forbidden`: 스테이지별 추가 금지어. 공통 금지어는 `scripts/forbidden-words.txt`.
 
 ## 13. 변경 기록
 
 - 2026-10-16 v0.1 초안
+- 2026-10-16 v0.2 M1 구현 반영: 티켓팅 단계(realism-spec), kind 목록, 대기열 파라미터, `skippableAtLevel`·`onTimeout`, 결과 `stat`·`judgment` 조건 (결정 0002)

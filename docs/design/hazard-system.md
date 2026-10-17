@@ -31,9 +31,20 @@
 
 **실패 결과(failEffect)**: 미해결 시 일어나는 일 — `lockMs`(입력 잠금), `penaltyMs`(시간 차감), `resetStep`(미션 단계 되돌림), `queueBack`(대기 순번 후퇴), `fatal`(즉시 실패).
 
-## 3. 데이터 형식 (TypeScript 타입 초안)
+## 3. 데이터 형식
 
-JSON 콘텐츠를 `zod`로 검증하고 타입을 추론하는 방식을 권장한다. 아래는 정본 후보.
+**정본은 `content/schema/card.ts`(zod)다.** 아래 초안에서 구현 때 바뀐 점 (결정 0002):
+
+- `effect`는 엔진이 아는 원시 효과의 조합이다: `overlay`(UI 표현), `blocksStep`(단계 입력 차단), `rateLimit{target,maxTaps,windowTicks}`(광클 제한), `squeezeTimerTicks`(제한시간 압축), `hook`(`seatMap.release`처럼 현재 단계에 보내는 신호), `code{length,alphabet}`(type 카드 정답).
+- `resolve.kind`: `tap{target}`, `hold{target,ticks}`, `type`, `choose{options}`, `avoid{target}`(건드리면 실패 — `step...`이면 단계 대상), `ignore{target}`(건드리면 실패 효과), `none`.
+- `expire`: 만료 시 `resolve`/`fail`. 생략하면 wait·ignore는 resolve, 나머지는 fail.
+- `window`: `steps`(단계 id) 또는 `stepKinds`(공통 카드용). window 카드는 **해당 단계 진입 후** 뜬다 (§5 보강, 결정 0002 #18).
+- `failEffect`: `none | lock{ticks} | penalty{ticks} | resetStep{to?} | queueBack{amount} | fatal{reason?}` (시간은 틱).
+- `evidence.level`: `confirmed | secondary | memory | guess | unverified`.
+- `synergyWith[].name`: 조합 이름 문구 키. 문구는 `{copyKey}.title`, `.body`, 버튼은 `{copyKey}.{target}`.
+- 공통 카드 `common.kakao-ping`은 `common.messenger-ping`으로 개명 (실제 메신저 이름을 ID에 두지 않음).
+
+아래는 처음 초안(역사 기록).
 
 ```ts
 // content/schema/hazard.ts (초안, 구현 아님)

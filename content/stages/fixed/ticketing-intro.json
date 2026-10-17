@@ -1,0 +1,7 @@
+{
+  "name": "ticketing-intro",
+  "entries": [
+    { "card": "common.messenger-ping", "startTick": 200 },
+    { "card": "common.popup-blocked", "startTick": 420 }
+  ]
+}
