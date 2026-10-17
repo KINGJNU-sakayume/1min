@@ -2,6 +2,7 @@ import { rawContent, type RawContent } from '../../content';
 import { cardFileSchema, type CardJson } from '../../content/schema/card';
 import { copySchema, type Copy } from '../../content/schema/copy';
 import { directorSchema } from '../../content/schema/director';
+import { themeSchema, type ThemeJson } from '../../content/schema/theme';
 import {
   fixedScheduleSchema,
   stageSchema,
@@ -17,6 +18,7 @@ export interface ParsedContent {
   cards: CardJson[];
   stageFiles: { file: string; stage: StageJson }[];
   fixedFiles: { file: string; fixed: FixedScheduleJson }[];
+  themes: Map<string, ThemeJson>;
 }
 
 export class ContentError extends Error {
@@ -59,6 +61,14 @@ export function parseContent(raw: RawContent = rawContent): ParsedContent {
     const fixed = parse(`stages/fixed/${f.file}`, fixedScheduleSchema, f.data);
     return fixed ? [{ file: f.file, fixed }] : [];
   });
+  const themes = new Map<string, ThemeJson>();
+  for (const f of raw.themeFiles) {
+    const theme = parse(`themes/${f.file}`, themeSchema, f.data);
+    if (theme) {
+      if (`${theme.id}.json` !== f.file) issues.push(`themes/${f.file}: id 불일치`);
+      themes.set(theme.id, theme);
+    }
+  }
   if (issues.length > 0 || !director) throw new ContentError(issues);
 
   const engine = buildEngineContent({
@@ -67,7 +77,7 @@ export function parseContent(raw: RawContent = rawContent): ParsedContent {
     stages: stageFiles.map((s) => s.stage),
     fixed: fixedFiles.map((f) => f.fixed),
   });
-  return { copy, engine, cards, stageFiles, fixedFiles };
+  return { copy, engine, cards, stageFiles, fixedFiles, themes };
 }
 
 let cached: ParsedContent | null = null;

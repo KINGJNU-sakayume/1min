@@ -12,37 +12,58 @@
       "stages": ["ticketing"],
       "telegraphMs": 0,
       "activeMs": 6000,
-      "window": { "steps": ["queue"] },
-      "effect": { "overlay": "banner" },
-      "resolve": { "kind": "avoid", "target": "step:refresh" },
-      "failEffect": { "kind": "queueBack", "amount": 12000 },
+      "window": {
+        "steps": ["queue"]
+      },
+      "effect": {
+        "overlay": "banner"
+      },
+      "resolve": {
+        "kind": "avoid",
+        "target": "step:refresh"
+      },
+      "failEffect": {
+        "kind": "queueBack",
+        "amount": 12000
+      },
       "exclusiveWith": ["tag:blocks-input"],
       "copyKey": "haz.refreshTemptation",
-      "evidence": { "level": "confirmed", "sources": ["S6", "S10", "S48"] },
+      "evidence": {
+        "level": "confirmed",
+        "sources": ["S6", "S10", "S48"]
+      },
       "touchRisk": "pullToRefresh"
     },
     {
       "id": "ticketing.seat-snipe",
       "version": 1,
       "surface": "info",
-      "counter": "tap",
-      "tags": ["seat", "blocks-input"],
+      "counter": "wait",
+      "tags": ["seat"],
       "cost": 3,
       "weight": 10,
       "minDifficulty": 1,
       "stages": ["ticketing"],
       "telegraphMs": 400,
-      "activeMs": null,
-      "window": { "steps": ["seat"] },
-      "effect": { "overlay": "modal", "blocksStep": true, "hook": "seatMap.release" },
-      "resolve": { "kind": "tap", "target": "ok" },
-      "failEffect": { "kind": "none" },
-      "exclusiveWith": ["tag:blocks-input"],
+      "activeMs": 4000,
+      "window": {
+        "steps": ["seat"]
+      },
+      "effect": {
+        "overlay": "none",
+        "hook": "seatMap.snipeNext"
+      },
+      "resolve": {
+        "kind": "none"
+      },
+      "failEffect": {
+        "kind": "none"
+      },
       "copyKey": "haz.seatSnipe",
       "evidence": {
         "level": "secondary",
         "sources": ["S48"],
-        "note": "\"이미 선택된 좌석입니다\" 패턴"
+        "note": "\"이미 선택된 좌석입니다\" 패턴. 활성 중 다음 선택이 직전에 팔린다"
       }
     },
     {
@@ -57,16 +78,30 @@
       "stages": ["ticketing"],
       "telegraphMs": 0,
       "activeMs": 6000,
-      "window": { "steps": ["seat"] },
+      "window": {
+        "steps": ["seat"]
+      },
       "effect": {
         "overlay": "banner",
-        "rateLimit": { "target": "step:zone", "maxTaps": 2, "windowTicks": 20 }
+        "rateLimit": {
+          "target": "step:zone",
+          "maxTaps": 2,
+          "windowTicks": 20
+        }
       },
-      "resolve": { "kind": "none" },
-      "failEffect": { "kind": "lock", "ticks": 60 },
+      "resolve": {
+        "kind": "none"
+      },
+      "failEffect": {
+        "kind": "lock",
+        "ticks": 60
+      },
       "exclusiveWith": ["tag:rate"],
       "copyKey": "haz.zoneClickLimit",
-      "evidence": { "level": "secondary", "note": "구역 이동 연타 쿨다운" }
+      "evidence": {
+        "level": "secondary",
+        "note": "구역 이동 연타 쿨다운"
+      }
     },
     {
       "id": "ticketing.one-account-one-queue",
@@ -81,18 +116,36 @@
       "telegraphMs": 0,
       "activeMs": 5000,
       "expire": "resolve",
-      "window": { "steps": ["queue"] },
-      "effect": { "overlay": "sheet" },
+      "window": {
+        "steps": ["queue"]
+      },
+      "effect": {
+        "overlay": "sheet"
+      },
       "resolve": {
         "kind": "choose",
         "options": [
-          { "id": "join", "label": "copy:haz.oneAccount.join", "correct": false },
-          { "id": "close", "label": "copy:haz.oneAccount.close", "correct": true }
+          {
+            "id": "join",
+            "label": "copy:haz.oneAccount.join",
+            "correct": false
+          },
+          {
+            "id": "close",
+            "label": "copy:haz.oneAccount.close",
+            "correct": true
+          }
         ]
       },
-      "failEffect": { "kind": "queueBack", "amount": 12000 },
+      "failEffect": {
+        "kind": "queueBack",
+        "amount": 12000
+      },
       "copyKey": "haz.oneAccount",
-      "evidence": { "level": "confirmed", "sources": ["S4"] }
+      "evidence": {
+        "level": "confirmed",
+        "sources": ["S4"]
+      }
     },
     {
       "id": "ticketing.price-zero-qty",
@@ -106,13 +159,28 @@
       "stages": ["ticketing"],
       "telegraphMs": 400,
       "activeMs": null,
-      "window": { "steps": ["price"] },
-      "effect": { "overlay": "modal", "blocksStep": true, "hook": "quantity.reset" },
-      "resolve": { "kind": "tap", "target": "ok" },
-      "failEffect": { "kind": "none" },
+      "window": {
+        "steps": ["price"]
+      },
+      "effect": {
+        "overlay": "modal",
+        "blocksStep": true,
+        "hook": "quantity.reset"
+      },
+      "resolve": {
+        "kind": "tap",
+        "target": "ok"
+      },
+      "failEffect": {
+        "kind": "none"
+      },
       "exclusiveWith": ["tag:blocks-input"],
       "copyKey": "haz.priceZeroQty",
-      "evidence": { "level": "secondary", "sources": ["S54"], "note": "기본가 수량 0매 시작" }
+      "evidence": {
+        "level": "secondary",
+        "sources": ["S54"],
+        "note": "기본가 수량 0매 시작"
+      }
     },
     {
       "id": "ticketing.buyer-birth-typo",
@@ -126,13 +194,28 @@
       "stages": ["ticketing"],
       "telegraphMs": 400,
       "activeMs": null,
-      "window": { "steps": ["buyer"] },
-      "effect": { "overlay": "modal", "blocksStep": true, "hook": "textInput.clear" },
-      "resolve": { "kind": "tap", "target": "ok" },
-      "failEffect": { "kind": "none" },
+      "window": {
+        "steps": ["buyer"]
+      },
+      "effect": {
+        "overlay": "modal",
+        "blocksStep": true,
+        "hook": "textInput.clear"
+      },
+      "resolve": {
+        "kind": "tap",
+        "target": "ok"
+      },
+      "failEffect": {
+        "kind": "none"
+      },
       "exclusiveWith": ["tag:blocks-input"],
       "copyKey": "haz.buyerBirthTypo",
-      "evidence": { "level": "secondary", "sources": ["S54"], "note": "생년월일 6자리 입력" }
+      "evidence": {
+        "level": "secondary",
+        "sources": ["S54"],
+        "note": "생년월일 6자리 입력"
+      }
     },
     {
       "id": "ticketing.bank-transfer-trap",
@@ -147,16 +230,31 @@
       "telegraphMs": 400,
       "activeMs": 5000,
       "expire": "resolve",
-      "window": { "steps": ["pay"] },
-      "effect": { "overlay": "sheet" },
+      "window": {
+        "steps": ["pay"]
+      },
+      "effect": {
+        "overlay": "sheet"
+      },
       "resolve": {
         "kind": "choose",
         "options": [
-          { "id": "bank", "label": "copy:haz.bankTransfer.bank", "correct": false },
-          { "id": "keep", "label": "copy:haz.bankTransfer.keep", "correct": true }
+          {
+            "id": "bank",
+            "label": "copy:haz.bankTransfer.bank",
+            "correct": false
+          },
+          {
+            "id": "keep",
+            "label": "copy:haz.bankTransfer.keep",
+            "correct": true
+          }
         ]
       },
-      "failEffect": { "kind": "resetStep", "to": "seat" },
+      "failEffect": {
+        "kind": "resetStep",
+        "to": "seat"
+      },
       "copyKey": "haz.bankTransfer",
       "evidence": {
         "level": "secondary",

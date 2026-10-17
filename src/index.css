@@ -17,6 +17,9 @@ body,
 
 body {
   margin: 0;
+  /* 한글은 어절 단위로 줄바꿈 */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   /* 당겨서 새로고침·바운스 억제 (iOS 사파리 지원 범위는 실기기 확인 필요) */
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
@@ -30,4 +33,16 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* 게임 쪽(HUD·홈·결과) 색. 「딱표」 같은 가상 사이트 색은 content/themes/*.json */
+@theme {
+  --color-game-bg: #f6f6f8;
+  --color-game-paper: #ffffff;
+  --color-game-ink: #1e2350;
+  --color-game-muted: #5c5f7a;
+  --color-game-line: #e3e3ea;
+  --color-game-chrome: #ececf1;
+  --color-game-accent: #c2255c;
+  --color-game-danger: #b42318;
 }
