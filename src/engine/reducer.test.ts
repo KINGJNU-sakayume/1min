@@ -302,7 +302,7 @@ describe('카드 효과', () => {
     expect(s.stats.rateLimited).toBe(1);
   });
 
-  it('seat-snipe: 활성 순간 고른 좌석이 사라진다', () => {
+  it('seat-snipe: 활성 중 다음에 고른 빈 좌석이 직전에 팔린다', () => {
     const ctx = withCard('ticketing.seat-snipe', { kind: 'step', stepId: 'seat', offset: 0 }, 3);
     const bot = playWithBot(bare(3), content().director.solver);
     let s = step(ctx, createInitialState(ctx), [{ tick: 0, action: 'start', target: 'run' }]).state;
@@ -312,18 +312,18 @@ describe('카드 효과', () => {
         s,
         bot.inputs.filter((i) => i.tick === s.tick),
       ).state;
-    // 텔레그래프 중에 좌석을 고른다
-    const seat = s.step.kind === 'seatMap' ? Object.keys(s.step.takenAt) : [];
-    expect(seat.length).toBeGreaterThan(0);
-    s = step(ctx, s, []).state;
-    expect(s.cards[0]?.status).toBe('telegraph');
-    const free = botSeat(ctx, s);
-    s = step(ctx, s, [tap(s.tick, `step:seat:${free}`)]).state;
-    expect(s.step.kind === 'seatMap' && s.step.selected).toBe(free);
     for (let k = 0; k < 10; k++) s = step(ctx, s, []).state;
     expect(s.cards[0]?.status).toBe('active');
+    const free = botSeat(ctx, s);
+    s = step(ctx, s, [tap(s.tick, `step:seat:${free}`)]).state;
     expect(s.step.kind === 'seatMap' && s.step.selected).toBeNull();
+    expect(s.step.kind === 'seatMap' && s.step.popup).toBe('conflict');
     expect(s.stats.seatConflicts).toBe(1);
+    // 확인 후 다른 좌석은 정상 선택
+    s = step(ctx, s, [tap(s.tick, 'step:seat-ok')]).state;
+    const next = botSeat(ctx, s);
+    s = step(ctx, s, [tap(s.tick, `step:seat:${next}`)]).state;
+    expect(s.step.kind === 'seatMap' && s.step.selected).toBe(next);
   });
 });
 

@@ -227,7 +227,7 @@
       "line": "copy:result.ticketing.failDefault.line"
     }
   ],
-  "theme": { "tokens": "ddakpyo", "seatShape": "jellybean" },
+  "theme": { "tokens": "raspberry", "seatShape": "jellybean" },
   "evidence": [
     {
       "claim": "정각 이후에도 단계가 6개 남는다 (예매하기→입력완료→좌석선택완료→다음 단계→결제하기)",

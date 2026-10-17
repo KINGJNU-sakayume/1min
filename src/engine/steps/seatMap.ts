@@ -66,6 +66,7 @@ export const seatMap = {
       selectedAt: 0,
       takenAt,
       popup: null,
+      snipeArmed: false,
     };
   },
 
@@ -95,6 +96,17 @@ export const seatMap = {
         ctx.emit({ type: 'notice', key: 'seat.conflict' });
         return same({ ...local, popup: 'conflict' });
       }
+      if (local.snipeArmed) {
+        // 누르는 순간 다른 사람이 먼저 가져갔다
+        ctx.stat('seatConflicts');
+        ctx.emit({ type: 'notice', key: 'seat.conflict' });
+        return same({
+          ...local,
+          takenAt: { ...local.takenAt, [arg]: ctx.tick },
+          popup: 'conflict',
+          snipeArmed: false,
+        });
+      }
       return same({ ...local, selected: arg, selectedAt: ctx.tick });
     }
     if (what === 'confirm') {
@@ -104,10 +116,8 @@ export const seatMap = {
     return same(local);
   },
 
-  hook(_def: StepOf<'seatMap'>, local: SeatLocal, name: string, ctx: StepCtx): SeatLocal {
-    if (name !== 'release' || !local.selected) return local;
-    ctx.stat('seatConflicts');
-    return { ...local, takenAt: { ...local.takenAt, [local.selected]: ctx.tick }, selected: null };
+  hook(_def: StepOf<'seatMap'>, local: SeatLocal, name: string): SeatLocal {
+    return name === 'snipeNext' ? { ...local, snipeArmed: true } : local;
   },
 };
 

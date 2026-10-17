@@ -101,6 +101,8 @@ export interface SeatLocal {
   /** 좌석 → 다른 사람이 가져간 틱 (-1 = 처음부터 매진). 없으면 끝까지 빈자리 */
   takenAt: Readonly<Record<string, number>>;
   popup: 'conflict' | null;
+  /** 좌석 가로채기 카드: 다음에 고르는 빈 좌석이 직전에 팔린다 */
+  snipeArmed: boolean;
 }
 export interface QuantityLocal {
   kind: 'quantity';

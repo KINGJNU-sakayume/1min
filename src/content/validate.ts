@@ -118,6 +118,7 @@ export function crossValidate(c: ParsedContent): string[] {
     for (const key of collectRefs(stage))
       if (!hasCopy(key)) errors.push(`${where}: 문구 없음 ${key}`);
     if (stage.evidence.length === 0) errors.push(`${where}: evidence 없음`);
+    if (!c.themes.has(stage.theme.tokens)) errors.push(`${where}: 테마 없음 ${stage.theme.tokens}`);
   }
 
   for (const { file, fixed } of c.fixedFiles) {

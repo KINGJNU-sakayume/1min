@@ -71,8 +71,7 @@ export function stepTick(def: StepJson, local: StepLocal, ctx: StepCtx): StepUpd
 export function stepHook(def: StepJson, local: StepLocal, hook: string, ctx: StepCtx): StepLocal {
   const [kind, name] = hook.split('.');
   if (kind !== def.kind || !name) return local;
-  if (def.kind === 'seatMap' && local.kind === 'seatMap')
-    return seatMap.hook(def, local, name, ctx);
+  if (def.kind === 'seatMap' && local.kind === 'seatMap') return seatMap.hook(def, local, name);
   if (def.kind === 'quantity' && local.kind === 'quantity') return quantity.hook(def, local, name);
   if (def.kind === 'textInput' && local.kind === 'textInput')
     return textInput.hook(def, local, name, ctx);

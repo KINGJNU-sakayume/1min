@@ -8,6 +8,7 @@ import commonCards from './cards/common.cards.json';
 import ticketingCards from './cards/ticketing.cards.json';
 import ticketingStage from './stages/ticketing.stage.json';
 import ticketingIntro from './stages/fixed/ticketing-intro.json';
+import raspberryTheme from './themes/raspberry.json';
 
 export const rawContent = {
   copy: ko as unknown,
@@ -18,6 +19,7 @@ export const rawContent = {
   ],
   stageFiles: [{ file: 'ticketing.stage.json', data: ticketingStage as unknown }],
   fixedFiles: [{ file: 'ticketing-intro.json', data: ticketingIntro as unknown }],
+  themeFiles: [{ file: 'raspberry.json', data: raspberryTheme as unknown }],
 };
 
 export type RawContent = typeof rawContent;
