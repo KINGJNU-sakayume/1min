@@ -1,0 +1,7 @@
+{
+  "name": "course-reg-intro",
+  "entries": [
+    { "card": "common.messenger-ping", "startTick": 260 },
+    { "card": "common.popup-blocked", "startTick": 480 }
+  ]
+}

@@ -10,7 +10,7 @@ import {
   stepTargetSchema,
 } from './common';
 
-/** 카드 데이터 형식 — 정본: docs/design/hazard-system.md §3 (결정 0002로 보강) */
+/** 카드 데이터 형식 — 정본: docs/design/hazard-system.md §3 (결정 0003로 보강) */
 export const surfaceSchema = z.enum([
   'overlay',
   'input',
@@ -81,7 +81,7 @@ export const cardSchema = z
     telegraphMs: msSchema,
     activeMs: msSchema.positive().nullable(),
     cooldownMs: msSchema.optional(),
-    /** 만료 시 결과. 생략하면 wait/ignore는 resolve, 그 외는 fail (결정 0002 #5) */
+    /** 만료 시 결과. 생략하면 wait/ignore는 resolve, 그 외는 fail (결정 0003 #5) */
     expire: z.enum(['resolve', 'fail']).optional(),
     window: z
       .object({

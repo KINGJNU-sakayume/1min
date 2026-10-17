@@ -34,7 +34,7 @@ export const directorSchema = z.object({
   /** 카드 배치가 끝나야 하는 판 길이 비율 (마지막 결제 압박 구간 확보) */
   lastStartPct: z.number().positive().max(100),
   placementAttempts: z.number().int().positive(),
-  /** 단계 고정 카드(window 있음)가 단계 진입 후 뜨기까지의 지연 범위 (결정 0002 #18) */
+  /** 단계 고정 카드(window 있음)가 단계 진입 후 뜨기까지의 지연 범위 (결정 0003 #18) */
   stepAnchorOffsetTicks: z
     .object({ min: z.number().int().min(0), max: z.number().int().min(0) })
     .refine((r) => r.min <= r.max, 'min ≤ max'),

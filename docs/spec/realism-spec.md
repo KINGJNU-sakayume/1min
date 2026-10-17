@@ -83,6 +83,8 @@
 - 시간표 중복 시 신청 불가 (S59).
 - 로그인이 10분 걸리는 현상은 `login` 스텝의 지연 카드로 표현 (S56).
 
+구현 메모 (M4): 이 결과 모델은 단계 종류 `courseCart`(`src/engine/steps/courseCart.ts`)와 스테이지 JSON의 `courseCart` 파라미터로 구현했다. `login`은 확인 단계, `submit`(결과 확정)은 장바구니 안의 pending 상태, `timetable`은 신청 내역 요약으로 압축했다. 대조표: `design/stages/course-reg.md`.
+
 ### 2.3 고유 카드 (≥5)
 
 `not-period-popup`, `infinite-loading`, `late-full`, `cart-ok-submit-blocked`, `queue-number-bug`, `click-limit`, `timetable-overlap`, `auto-logout`, `mobile-not-supported-notice`

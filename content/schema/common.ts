@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { copyRefSchema } from './copy';
 
-/** 근거 라벨: [확인] [2차] [기억] [추측] [미확인] (결정 0002 #3) */
+/** 근거 라벨: [확인] [2차] [기억] [추측] [미확인] (결정 0003 #3) */
 export const evidenceLevelSchema = z.enum([
   'confirmed',
   'secondary',

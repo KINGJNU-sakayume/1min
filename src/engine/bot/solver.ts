@@ -1,4 +1,5 @@
 import { createInitialState, isStepPattern, matchesTarget, step } from '../reducer';
+import { overlaps, registered } from '../steps/courseCart';
 import { seatView, zoneSeatIds } from '../steps/seatMap';
 import type { Action, Input, RunContext, RunState } from '../types';
 
@@ -158,6 +159,19 @@ export function botPolicy(ctx: RunContext, s: RunState, mem: BotMemory, p: BotPa
     case 'choose': {
       const ok = def.choose.options.find((o) => o.correct);
       return ok ? stepAct('tap', `step:opt:${ok.id}`) : [];
+    }
+    case 'courseCart': {
+      if (local.kind !== 'courseCart') return [];
+      if (local.popup) return stepAct('tap', 'step:popup-ok');
+      if (registered(local) >= def.completesWhen.count) return stepAct('tap', 'step:done');
+      if (t < ctx.t0 + p.openDelayTicks) return [];
+      // 화면에 보이는 "담은 인원 / 정원"이 높은 과목부터
+      const next = def.courseCart.courses
+        .filter((c) => local.courses[c.id]?.status === 'idle' && !overlaps(def, local, c.id))
+        .sort(
+          (a, b) => (local.cart[b.id] ?? 0) / b.capacity - (local.cart[a.id] ?? 0) / a.capacity,
+        )[0];
+      return next ? stepAct('tap', `step:apply:${next.id}`) : [];
     }
     case 'hold':
       if (allowed('step:hold')) mem.hold = { target: 'step:hold', start: t };

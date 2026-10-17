@@ -1,0 +1,202 @@
+{
+  "id": "course-reg",
+  "version": 1,
+  "mode": "open",
+  "title": "copy:stage.course-reg.title",
+  "brand": {
+    "name": "copy:brand.courseReg.name",
+    "fictional": true,
+    "disclaimer": "copy:common.parodyNotice",
+    "forbidden": []
+  },
+  "durationTicks": 1200,
+  "steps": [
+    {
+      "id": "login",
+      "kind": "confirm",
+      "title": "copy:step.course-reg.login",
+      "completesWhen": { "type": "confirmed" }
+    },
+    {
+      "id": "cart",
+      "kind": "courseCart",
+      "title": "copy:step.course-reg.cart",
+      "completesWhen": { "type": "coursesRegistered", "count": 3 },
+      "courseCart": {
+        "courses": [
+          {
+            "id": "ds",
+            "name": "copy:course.ds",
+            "credits": 3,
+            "slot": "mon-1",
+            "capacity": 40,
+            "cartCount": { "min": 30, "max": 40 }
+          },
+          {
+            "id": "writing",
+            "name": "copy:course.writing",
+            "credits": 2,
+            "slot": "tue-3",
+            "capacity": 30,
+            "cartCount": { "min": 22, "max": 30 }
+          },
+          {
+            "id": "wine",
+            "name": "copy:course.wine",
+            "credits": 2,
+            "slot": "wed-5",
+            "capacity": 50,
+            "cartCount": { "min": 120, "max": 160 }
+          },
+          {
+            "id": "calculus",
+            "name": "copy:course.calculus",
+            "credits": 3,
+            "slot": "wed-5",
+            "capacity": 40,
+            "cartCount": { "min": 44, "max": 60 }
+          },
+          {
+            "id": "nap",
+            "name": "copy:course.nap",
+            "credits": 1,
+            "slot": "fri-2",
+            "capacity": 25,
+            "cartCount": { "min": 55, "max": 90 }
+          }
+        ],
+        "fillBaseTicks": 180,
+        "fillJitter": 0.2,
+        "pendingTicks": { "min": 8, "max": 36 },
+        "notPeriodCardTicks": 60,
+        "slowExtraTicks": 60,
+        "lateFullExtraTicks": 80
+      }
+    },
+    {
+      "id": "timetable",
+      "kind": "confirm",
+      "title": "copy:step.course-reg.timetable",
+      "completesWhen": { "type": "confirmed" }
+    }
+  ],
+  "deck": {
+    "common": [
+      "common.messenger-ping",
+      "common.captcha",
+      "common.server-lag",
+      "common.popup-blocked",
+      "common.rapid-click-limit"
+    ],
+    "specific": [
+      "course-reg.not-period-popup",
+      "course-reg.infinite-loading",
+      "course-reg.late-full",
+      "course-reg.cart-ok-submit-blocked",
+      "course-reg.click-limit",
+      "course-reg.auto-logout",
+      "course-reg.mobile-not-supported"
+    ],
+    "mustInclude": { "specificMin": 1 },
+    "weightOverrides": { "course-reg.not-period-popup": 16 }
+  },
+  "difficulty": [
+    { "level": 0, "budget": 3, "maxSlots": 1, "fixedSchedule": "course-reg-intro" },
+    { "level": 1, "budget": 6, "maxSlots": 1 },
+    { "level": 2, "budget": 10, "maxSlots": 1 },
+    { "level": 3, "budget": 14, "maxSlots": 2 },
+    { "level": 4, "budget": 18, "maxSlots": 2 },
+    { "level": 5, "budget": 22, "maxSlots": 3 }
+  ],
+  "results": [
+    {
+      "id": "success-allclear",
+      "when": { "outcome": "success", "stat": { "name": "coursesRegistered", "gte": 4 } },
+      "title": "copy:result.course-reg.allClear",
+      "line": "copy:result.course-reg.allClear.line"
+    },
+    {
+      "id": "success-close",
+      "when": { "outcome": "success", "remainingTicksLte": 60 },
+      "title": "copy:result.course-reg.successClose",
+      "line": "copy:result.course-reg.successClose.line"
+    },
+    {
+      "id": "success-default",
+      "when": { "outcome": "success" },
+      "title": "copy:result.course-reg.successDefault",
+      "line": "copy:result.course-reg.successDefault.line"
+    },
+    {
+      "id": "fail-notperiod",
+      "when": { "outcome": "fail", "stat": { "name": "notPeriodHits", "gte": 3 } },
+      "title": "copy:result.course-reg.failNotPeriod",
+      "line": "copy:result.course-reg.failNotPeriod.line"
+    },
+    {
+      "id": "fail-full",
+      "when": { "outcome": "fail", "stat": { "name": "coursesFull", "gte": 2 } },
+      "title": "copy:result.course-reg.failFull",
+      "line": "copy:result.course-reg.failFull.line"
+    },
+    {
+      "id": "fail-blocked",
+      "when": { "outcome": "fail", "stat": { "name": "coursesBlocked", "gte": 1 } },
+      "title": "copy:result.course-reg.failBlocked",
+      "line": "copy:result.course-reg.failBlocked.line"
+    },
+    {
+      "id": "fail-lock",
+      "when": { "outcome": "fail", "stat": { "name": "rateLimited", "gte": 1 } },
+      "title": "copy:result.course-reg.failLock",
+      "line": "copy:result.course-reg.failLock.line"
+    },
+    {
+      "id": "fail-overlap",
+      "when": { "outcome": "fail", "stat": { "name": "timetableOverlap", "gte": 2 } },
+      "title": "copy:result.course-reg.failOverlap",
+      "line": "copy:result.course-reg.failOverlap.line"
+    },
+    {
+      "id": "fail-default",
+      "when": { "outcome": "fail" },
+      "title": "copy:result.course-reg.failDefault",
+      "line": "copy:result.course-reg.failDefault.line"
+    }
+  ],
+  "theme": { "tokens": "meadow" },
+  "evidence": [
+    {
+      "claim": "수강희망과목 담기 → 수강신청 단계, 희망 인원이 정원 이하면 모두 신청 처리",
+      "level": "confirmed",
+      "sources": ["S59"]
+    },
+    { "claim": "시간이 겹치는 과목은 신청 불가", "level": "confirmed", "sources": ["S59"] },
+    {
+      "claim": "정각에 \"수강신청 기간이 아닙니다!\"가 수 분간 계속",
+      "level": "confirmed",
+      "sources": ["S56"]
+    },
+    {
+      "claim": "신청 버튼 결과를 오래 알 수 없음, 무한 로딩 뒤 실패",
+      "level": "confirmed",
+      "sources": ["S55"]
+    },
+    { "claim": "담기는 되는데 신청에서 자격 오류", "level": "confirmed", "sources": ["S55"] },
+    { "claim": "1초 2회 초과 클릭 불가", "level": "confirmed", "sources": ["S22"] },
+    { "claim": "정각 직전 로그인 풀림", "level": "confirmed", "sources": ["S22"] },
+    {
+      "claim": "과목 목록 레이아웃·버튼 위치",
+      "level": "unverified",
+      "note": "학교마다 다름. 스킨으로 분리"
+    }
+  ],
+  "legal": {
+    "noRealBrands": true,
+    "noRealPeople": true,
+    "noRealInputRequested": true,
+    "disclaimerShown": true,
+    "assetLicenses": "docs/assets-licenses.md",
+    "reviewedAt": "2026-10-17"
+  }
+}
