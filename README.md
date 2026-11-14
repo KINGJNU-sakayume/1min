@@ -19,6 +19,10 @@ npm ci
 npm run dev          # http://localhost:5173/1min/
 npm test             # Vitest (엔진·콘텐츠·저장·공유)
 npm run lint && npm run typecheck
+npm run test:watch   # 변경을 감시하며 테스트 다시 실행
+npm run format       # Prettier로 정리 (format:check는 검사만)
+npm run check:content  # 콘텐츠 스키마·금지어 검사 (build가 먼저 실행)
+npm run preview      # 빌드 결과를 로컬에서 확인
 npm run build        # 콘텐츠 검사(스키마·금지어) + 빌드 + 404.html + sw.js
 npm run e2e          # Playwright (빌드 후)
 npx tsx scripts/balance-report.ts ticketing   # 밸런스 리포트
